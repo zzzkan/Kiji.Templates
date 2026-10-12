@@ -1,0 +1,7 @@
+[
+  {
+    "directory": "minimal",
+    "shortName": "kiji",
+    "expectedHtml": "Hello from Kiji"
+  }
+]

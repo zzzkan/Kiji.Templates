@@ -1,0 +1,15 @@
+{
+  "$schema": "https://json.schemastore.org/template",
+  "author": "zzzkan",
+  "classifications": ["Web", "Static Site"],
+  "identity": "Kiji.Minimal",
+  "name": "Kiji static site",
+  "description": "A minimal static site built with Razor and Kiji.",
+  "shortName": "kiji",
+  "sourceName": "KijiSite",
+  "preferNameDirectory": true,
+  "tags": {
+    "language": "C#",
+    "type": "project"
+  }
+}
