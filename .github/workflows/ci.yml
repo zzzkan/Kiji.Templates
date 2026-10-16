@@ -6,10 +6,18 @@ on:
   pull_request:
     branches: [main]
   workflow_dispatch:
+  workflow_call:
+    inputs:
+      package-artifact:
+        description: Existing package artifact to verify; pack locally when omitted.
+        required: false
+        type: string
+        default: ''
 
 concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
+  # A called workflow inherits its caller's name; keep this group distinct from Release.
+  group: ${{ github.workflow }}-verify-${{ github.ref }}
+  cancel-in-progress: ${{ inputs.package-artifact == '' }}
 
 permissions:
   contents: read
@@ -21,19 +29,85 @@ jobs:
       matrix:
         os: [ubuntu-latest, windows-latest]
     runs-on: ${{ matrix.os }}
+    defaults:
+      run:
+        shell: pwsh
+    env:
+      DOTNET_CLI_HOME: ${{ github.workspace }}/artifacts/verification/cli
+      NUGET_PACKAGES: ${{ github.workspace }}/artifacts/verification/packages
+      DOTNET_ADD_GLOBAL_TOOLS_TO_PATH: '0'
+      DOTNET_GENERATE_ASPNET_CERTIFICATE: '0'
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0 # MinVer uses Git tags to determine the package version.
       - uses: actions/setup-dotnet@a98b56852c35b8e3190ac28c8c2271da59106c68 # v6.0.0
         with:
           global-json-file: global.json
-      - name: Pack and verify
-        shell: pwsh
-        run: ./scripts/verify.ps1
-      - name: Upload verification logs
+      - name: Download existing package
+        if: inputs.package-artifact != ''
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          name: ${{ inputs.package-artifact }}
+          path: artifacts/packages
+      - name: Pack
+        if: inputs.package-artifact == ''
+        run: dotnet pack Kiji.Templates.csproj -c Release -o artifacts/packages
+      - name: Select package
+        run: |
+          $packages = @(Get-ChildItem artifacts/packages/*.nupkg)
+          if ($packages.Count -ne 1) {
+            throw "Expected one template package, found $($packages.Count)."
+          }
+          "TEMPLATE_PACKAGE=$($packages[0].FullName)" >> $env:GITHUB_ENV
+      - name: Restore Authoring CLI
+        run: dotnet tool restore
+      - name: Validate packaged definitions
+        run: dotnet tool run dotnet-template-authoring -- validate $env:TEMPLATE_PACKAGE
+      - name: Compare generated files
+        run: >-
+          dotnet tool run dotnet-template-authoring -- verify kiji-minimal
+          --template-path $env:TEMPLATE_PACKAGE
+          --scenario-name named --template-args "-n Travel.Journal --no-restore"
+          --output "artifacts/verification/generated site"
+          --snapshots-directory tests/snapshots
+          --disable-diff-tool --disable-default-exclude-patterns
+      - name: Check CLI naming and restore
+        run: |
+          $PSNativeCommandUseErrorActionPreference = $true
+          dotnet new install $env:TEMPLATE_PACKAGE
+          dotnet new kiji-minimal -o artifacts/verification/MySite
+          if (!(Test-Path artifacts/verification/MySite/MySite.csproj) -or
+              (Get-Content artifacts/verification/MySite/Program.cs -Raw) -notmatch 'Name = "MySite"' -or
+              (Get-Content artifacts/verification/MySite/README.md -Raw) -notmatch '^# MySite\r?\n') {
+            throw 'The output directory name was not used as the project and site name.'
+          }
+          dotnet new kiji-minimal -n Travel.Journal -o "artifacts/verification/named site" --no-restore
+          if (!(Test-Path "artifacts/verification/named site/Travel.Journal.csproj") -or
+              (Get-Content "artifacts/verification/named site/Program.cs" -Raw) -notmatch 'Name = "Travel.Journal"' -or
+              (Get-Content "artifacts/verification/named site/README.md" -Raw) -notmatch '^# Travel\.Journal\r?\n') {
+            throw 'The explicit project and site name did not override the output directory name.'
+          }
+          if ((Test-Path "artifacts/verification/generated site/kiji-minimal/obj/project.assets.json") -or
+              (Test-Path "artifacts/verification/named site/obj/project.assets.json")) {
+            throw '--no-restore did not skip dependency restore.'
+          }
+      - name: Publish standard CLI site without restoring again
+        run: |
+          $PSNativeCommandUseErrorActionPreference = $true
+          New-Item -ItemType Directory -Force artifacts/verification/logs | Out-Null
+          dotnet publish artifacts/verification/MySite/MySite.csproj -c Release --no-restore -bl:artifacts/verification/logs/standard-publish.binlog
+          if ((Get-Content artifacts/verification/MySite/dist/index.html -Raw) -notmatch 'Hello from Kiji') {
+            throw 'Published home page is missing its expected content.'
+          }
+      - name: Upload verification diagnostics
         if: failure()
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: verification-${{ matrix.os }}
-          path: artifacts/verification/**/*.log
+          path: |
+            tests/snapshots/*.received/**
+            artifacts/verification/logs/**
+          include-hidden-files: true
           if-no-files-found: ignore
           retention-days: 7

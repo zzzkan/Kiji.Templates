@@ -4,7 +4,7 @@ var app = StaticSite.Create(args);
 app.Info = new SiteInfo
 {
     BaseUrl = new Uri("https://example.com/"),
-    Name = "KijiSite",
+    Name = "Kiji.Minimal",
 };
 app.AddPages();
 

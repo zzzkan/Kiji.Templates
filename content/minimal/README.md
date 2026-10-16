@@ -1,10 +1,9 @@
-# KijiSite
+# Kiji.Minimal
 
-This is your static website, built with Razor and Kiji. Requires the .NET 10 SDK.
+A minimal static website with a single home page, built with Razor and Kiji.
+Requires the .NET 10 SDK.
 
 ## Preview and edit
-
-From this directory, run:
 
 ```sh
 dotnet watch
@@ -21,7 +20,7 @@ dotnet publish -c Release
 ```
 
 Upload the contents of `dist/` to your static host. The published files do not need
-a .NET server. Build output and local caches are already excluded by `.gitignore`.
+a .NET server.
 
 ## Learn more
 

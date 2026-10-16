@@ -1,8 +1,14 @@
-**/bin/
-**/obj/
-**/dist/
-**/.kiji/
+# Build, preview, and IDE output at any depth.
+bin/
+obj/
+dist/
+.kiji/
 .vs/
-artifacts/
+
+# Local verification state and packages.
+/artifacts/
 *.nupkg
 *.snupkg
+
+# Actual output from failed template snapshot comparisons.
+/tests/snapshots/*.received/

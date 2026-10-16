@@ -1,0 +1,86 @@
+name: Deploy demos
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pages: read
+    defaults:
+      run:
+        shell: pwsh
+    env:
+      DOTNET_CLI_HOME: ${{ github.workspace }}/artifacts/verification/cli
+      NUGET_PACKAGES: ${{ github.workspace }}/artifacts/verification/packages
+      DOTNET_ADD_GLOBAL_TOOLS_TO_PATH: '0'
+      DOTNET_GENERATE_ASPNET_CERTIFICATE: '0'
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0 # MinVer uses Git tags to determine the package version.
+      - uses: actions/setup-dotnet@a98b56852c35b8e3190ac28c8c2271da59106c68 # v6.0.0
+        with:
+          global-json-file: global.json
+      - name: Read Pages URL
+        if: github.event_name != 'pull_request'
+        id: pages
+        uses: actions/configure-pages@983d7736d9b0ae728b81ab479565c72886d7745b # v5.0.0
+      - name: Pack templates
+        run: dotnet pack Kiji.Templates.csproj -c Release -o artifacts/verification/packed
+      - name: Install templates
+        run: |
+          $PSNativeCommandUseErrorActionPreference = $true
+          $packages = @(Get-ChildItem artifacts/verification/packed/*.nupkg)
+          if ($packages.Count -ne 1) {
+            throw "Expected one template package, found $($packages.Count)."
+          }
+          dotnet new install $packages[0].FullName
+      - name: Build demos
+        env:
+          # Pull requests build without requiring Pages configuration or write access.
+          PAGES_BASE_URL: ${{ steps.pages.outputs.base_url || format('https://{0}.github.io/{1}', github.repository_owner, github.event.repository.name) }}
+        run: |
+          # Add template kinds here; all demos are uploaded and deployed together.
+          ./.github/scripts/build-demos.ps1 -BaseUrl $env:PAGES_BASE_URL -Templates @('minimal')
+      - name: Upload Pages site
+        if: github.event_name != 'pull_request'
+        uses: actions/upload-pages-artifact@7b1f4a764d45c48632c6b24a0339c27f5614fb0b # v4.0.0
+        with:
+          path: artifacts/verification/pages
+      - name: Upload build diagnostics
+        if: failure()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: demo-build-logs
+          path: artifacts/verification/demos/logs/**
+          if-no-files-found: ignore
+          retention-days: 7
+
+  deploy:
+    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy all demos
+        id: deployment
+        uses: actions/deploy-pages@d6db90164ac5ed86f2b6aed7e0febac5b3c0c03e # v4.0.5

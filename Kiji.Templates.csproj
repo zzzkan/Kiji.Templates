@@ -2,27 +2,28 @@
   <PropertyGroup>
     <TargetFramework>net10.0</TargetFramework>
     <PackageId>Kiji.Templates</PackageId>
-    <PackageVersion>0.1.0</PackageVersion>
     <PackageType>Template</PackageType>
     <Authors>zzzkan</Authors>
     <Description>Project templates for Kiji, a static site generator for .NET.</Description>
-    <PackageTags>dotnet-new;templates;static-site-generator;razor;kiji</PackageTags>
+    <PackageTags>dotnet-new;templates;kiji</PackageTags>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <PackageProjectUrl>https://github.com/zzzkan/Kiji.Templates</PackageProjectUrl>
     <RepositoryUrl>https://github.com/zzzkan/Kiji.Templates</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <IncludeBuildOutput>false</IncludeBuildOutput>
-    <IncludeContentInPack>true</IncludeContentInPack>
     <SuppressDependenciesWhenPacking>true</SuppressDependenciesWhenPacking>
-    <EnableDefaultItems>false</EnableDefaultItems>
     <NoDefaultExcludes>true</NoDefaultExcludes>
-    <NoWarn>$(NoWarn);NU5128</NoWarn>
+    <MinVerTagPrefix>v</MinVerTagPrefix>
   </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="MinVer" Version="8.0.0" PrivateAssets="all" />
+  </ItemGroup>
   <ItemGroup>
     <Content Include="content/**/*"
              Exclude="content/**/bin/**;content/**/obj/**;content/**/dist/**;content/**/.kiji/**;content/**/.vs/**"
              PackagePath="content/%(RecursiveDir)%(Filename)%(Extension)" />
+    <Compile Remove="**/*" />
     <None Include="README.md" Pack="true" PackagePath="/" />
   </ItemGroup>
 </Project>
