@@ -1,4 +1,1 @@
-* text=auto
-*.yml text eol=lf
-content/** text=auto eol=lf
-tests/snapshots/** text eol=lf
+* text=auto eol=lf

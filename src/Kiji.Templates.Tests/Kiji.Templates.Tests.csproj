@@ -9,9 +9,12 @@
   </PropertyGroup>
   <ItemGroup>
     <FrameworkReference Include="Microsoft.AspNetCore.App" />
+    <PackageReference Include="CliWrap" Version="3.10.5" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="18.11.0" />
     <PackageReference Include="Microsoft.Playwright.Xunit.v3" Version="1.63.0" />
     <PackageReference Include="xunit.v3.mtp-off" Version="4.0.2" />
     <PackageReference Include="xunit.runner.visualstudio" Version="4.0.1" PrivateAssets="all" />
+    <Compile Include="../TemplatePackage.cs" Link="Infrastructure/TemplatePackage.cs" />
+    <Compile Include="../DotnetCli.cs" Link="Infrastructure/DotnetCli.cs" />
   </ItemGroup>
 </Project>

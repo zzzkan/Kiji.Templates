@@ -8,20 +8,20 @@ using Microsoft.Playwright;
 using Microsoft.Playwright.Xunit.v3;
 using Xunit;
 
-namespace Kiji.Templates.BrowserTests;
+namespace Kiji.Templates.Tests;
 
-public abstract class PublishedSiteTest : PageTest
+[Collection("Templates")]
+public abstract class PublishedSiteTest(TemplateFixture fixture) : PageTest
 {
-    protected async Task VerifySite(string template, string siteDirectory, string prefix, string caseName,
+    protected async Task VerifySite(string template, bool subpath,
         Func<string, string, Task> verify)
     {
-        var run = Environment.GetEnvironmentVariable("KIJI_VERIFICATION_DIRECTORY")
-            ?? throw new InvalidOperationException("Set KIJI_VERIFICATION_DIRECTORY to the verification output directory.");
-        var root = Path.GetFullPath(Path.Combine(run, "sites", template, siteDirectory));
-        var diagnostics = Path.Combine(run, "logs", template, caseName);
+        var site = await fixture.GetSite(template, subpath);
+        var prefix = site.Prefix;
+        var diagnostics = Path.Combine(fixture.Dotnet.Logs, template, subpath ? "subpath" : "root");
         Directory.CreateDirectory(diagnostics);
 
-        using var files = new PhysicalFileProvider(root);
+        using var files = new PhysicalFileProvider(site.Output);
         var builder = WebApplication.CreateSlimBuilder();
         builder.Logging.ClearProviders();
         builder.WebHost.ConfigureKestrel(options => options.Listen(IPAddress.Loopback, 0));

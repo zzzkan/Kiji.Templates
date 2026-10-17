@@ -2,9 +2,9 @@ using System.Xml.Linq;
 using Microsoft.Playwright;
 using Xunit;
 
-namespace Kiji.Templates.BrowserTests;
+namespace Kiji.Templates.Tests;
 
-public class BlogTests : PublishedSiteTest
+public class BlogTests(TemplateFixture fixture) : PublishedSiteTest(fixture)
 {
     public override BrowserNewContextOptions ContextOptions() => new()
     {
@@ -14,10 +14,10 @@ public class BlogTests : PublishedSiteTest
     };
 
     [Theory]
-    [InlineData("MySite/dist", "/", "MySite", "root")]
-    [InlineData("subpath", "/Kiji.Templates/blog/", "Travel.Journal", "subpath")]
-    public Task PublishedBlogWorksWithoutJavaScript(string siteDirectory, string prefix, string siteName, string caseName)
-        => VerifySite("blog", siteDirectory, prefix, caseName, async (baseUrl, diagnostics) =>
+    [InlineData(false, "/", "MySite")]
+    [InlineData(true, "/Kiji.Templates/blog/", "Travel.Journal")]
+    public Task PublishedBlogWorksWithoutJavaScript(bool subpath, string prefix, string siteName)
+        => VerifySite("blog", subpath, async (baseUrl, diagnostics) =>
     {
         await Page.GotoAsync(baseUrl);
         await Expect(Page).ToHaveTitleAsync($"Home - {siteName}");

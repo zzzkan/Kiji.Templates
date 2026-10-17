@@ -9,6 +9,3 @@ dist/
 /artifacts/
 *.nupkg
 *.snupkg
-
-# Actual output from failed template snapshot comparisons.
-/tests/snapshots/*.received/

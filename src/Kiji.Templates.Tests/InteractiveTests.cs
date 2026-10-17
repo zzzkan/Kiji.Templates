@@ -1,9 +1,9 @@
 using Microsoft.Playwright;
 using Xunit;
 
-namespace Kiji.Templates.BrowserTests;
+namespace Kiji.Templates.Tests;
 
-public class InteractiveTests : PublishedSiteTest
+public class InteractiveTests(TemplateFixture fixture) : PublishedSiteTest(fixture)
 {
     public override BrowserNewContextOptions ContextOptions() => new()
     {
@@ -13,10 +13,10 @@ public class InteractiveTests : PublishedSiteTest
     };
 
     [Theory]
-    [InlineData("MySite/dist", "/", "root")]
-    [InlineData("subpath", "/Kiji.Templates/interactive/", "subpath")]
-    public Task PublishedInteractiveWorks(string siteDirectory, string prefix, string caseName)
-        => VerifySite("interactive", siteDirectory, prefix, caseName, async (baseUrl, diagnostics) =>
+    [InlineData(false, "/")]
+    [InlineData(true, "/Kiji.Templates/interactive/")]
+    public Task PublishedInteractiveWorks(bool subpath, string prefix)
+        => VerifySite("interactive", subpath, async (baseUrl, diagnostics) =>
     {
         await Page.GotoAsync(baseUrl);
         await Expect(Page.GetByRole(AriaRole.Main)).ToMatchAriaSnapshotAsync("""

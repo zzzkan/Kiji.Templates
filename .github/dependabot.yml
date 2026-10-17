@@ -2,9 +2,9 @@ version: 2
 updates:
   - package-ecosystem: nuget
     directories:
-      - /
-      - /content/*
-      - /tests/*
+      - /src
+      - /src/*
+      - /src/Kiji.Templates/content/*
     schedule:
       interval: weekly
     open-pull-requests-limit: 5

@@ -22,7 +22,7 @@ jobs:
         with:
           global-json-file: global.json
       - name: Pack the tagged version
-        run: dotnet pack Kiji.Templates.csproj -c Release -o artifacts/packages
+        run: dotnet pack src/Kiji.Templates/Kiji.Templates.csproj -c Release -o artifacts/packages
       - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: package

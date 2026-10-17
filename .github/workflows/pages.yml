@@ -40,22 +40,14 @@ jobs:
         id: pages
         uses: actions/configure-pages@45bfe0192ca1faeb007ade9deae92b16b8254a0d # v6.0.0
       - name: Pack templates
-        run: dotnet pack Kiji.Templates.csproj -c Release -o artifacts/verification/packed
-      - name: Install templates
-        run: |
-          $PSNativeCommandUseErrorActionPreference = $true
-          $packages = @(Get-ChildItem artifacts/verification/packed/*.nupkg)
-          if ($packages.Count -ne 1) {
-            throw "Expected one template package, found $($packages.Count)."
-          }
-          dotnet new install $packages[0].FullName
+        run: dotnet pack src/Kiji.Templates/Kiji.Templates.csproj -c Release -o artifacts/verification/packed
       - name: Build demos
         env:
           # Pull requests build without requiring Pages configuration or write access.
           PAGES_BASE_URL: ${{ steps.pages.outputs.base_url || format('https://{0}.github.io/{1}', github.repository_owner, github.event.repository.name) }}
-        run: |
-          # Add template kinds here; all demos are uploaded and deployed together.
-          ./.github/scripts/build-demos.ps1 -BaseUrl $env:PAGES_BASE_URL -Templates @('minimal', 'interactive', 'blog')
+        run: >-
+          dotnet run --file src/build-demos.cs -- artifacts/verification/packed
+          "$env:PAGES_BASE_URL" artifacts/verification/demos artifacts/verification/pages
       - name: Upload Pages site
         if: github.event_name != 'pull_request'
         uses: actions/upload-pages-artifact@fc324d3547104276b827a68afc52ff2a11cc49c9 # v5.0.0
