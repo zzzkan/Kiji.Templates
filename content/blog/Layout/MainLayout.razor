@@ -1,0 +1,24 @@
+@inherits LayoutComponentBase
+@inject SiteInfo Site
+@inject PageInfo Page
+
+<a class="skip-link" href="#content">Skip to content</a>
+<header class="site-header">
+    <a class="site-name" href="@Site.ResolveUrl("").AbsolutePath">@Site.Name</a>
+    <nav aria-label="Main navigation">
+        <a href="@Site.ResolveUrl("").AbsolutePath" aria-current="@Current("")">Home</a>
+        <a href="@Site.ResolveUrl("about/").AbsolutePath" aria-current="@Current("about/")">About</a>
+        <a href="@Site.ResolveUrl("feed.xml").AbsolutePath">RSS</a>
+    </nav>
+</header>
+<main id="content" tabindex="-1">
+    @Body
+</main>
+<footer class="site-footer">
+    <small>Written here. Published with <a href="https://github.com/zzzkan/kiji">Kiji</a>.</small>
+</footer>
+
+@code {
+    private string? Current(string path) =>
+        Page.Url.AbsolutePath == Site.ResolveUrl(path).AbsolutePath ? "page" : null;
+}

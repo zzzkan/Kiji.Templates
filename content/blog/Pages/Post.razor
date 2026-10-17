@@ -1,0 +1,30 @@
+@page "/posts/{Slug}/"
+@inject ContentDictionary<BlogPost> Posts
+@inject SiteInfo Site
+
+@if (_post is not null)
+{
+    <PageHead Title="@_post.Title" Description="@_post.Description" />
+    <article>
+        <header class="post-header">
+            <h1>@_post.Title</h1>
+            <time datetime="@_post.Date.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)">@_post.Date.ToString("dd MMM yyyy", CultureInfo.InvariantCulture)</time>
+        </header>
+        <div>@((MarkupString)_html)</div>
+    </article>
+    <p class="back-link"><a href="@Site.ResolveUrl("").AbsolutePath">All posts</a></p>
+}
+
+@code {
+    [Parameter] public string Slug { get; set; } = string.Empty;
+    [Parameter] public string ContentKey { get; set; } = string.Empty;
+
+    private BlogPost? _post;
+    private string _html = string.Empty;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        _post = Posts[ContentKey];
+        _html = await _post.Content.RenderAsync();
+    }
+}

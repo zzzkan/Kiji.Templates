@@ -1,0 +1,17 @@
+@inject SiteInfo Site
+@inject PageInfo Page
+
+<StaticHeadContent>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>@Title - @Site.Name</title>
+    <meta name="description" content="@(Description ?? Site.Description)" />
+    <link rel="canonical" href="@Page.Url" />
+    <link rel="stylesheet" href="@Assets["css/blog.css"]" />
+    <link rel="alternate" type="application/rss+xml" title="@Site.Name" href="@Site.ResolveUrl("feed.xml").AbsolutePath" />
+</StaticHeadContent>
+
+@code {
+    [Parameter, EditorRequired] public string Title { get; set; } = string.Empty;
+    [Parameter] public string? Description { get; set; }
+}

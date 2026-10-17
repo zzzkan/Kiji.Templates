@@ -8,6 +8,7 @@ Create a static website with Razor and [Kiji](https://github.com/zzzkan/kiji).
 | --- | --- | --- |
 | Kiji Minimal | `kiji-minimal` | A minimal site with a single home page, ready to preview and publish. |
 | Kiji Interactive | `kiji-interactive` | A sample site recreating the familiar Blazor WebAssembly template pages with Razor, Kiji, and JavaScript interactions. |
+| Kiji Blog | `kiji-blog` | A small Markdown blog with dated posts, an About page, RSS, and automatic light/dark colors. |
 
 Requires the **.NET 10 SDK**.
 
@@ -29,6 +30,10 @@ Dependencies are restored automatically; add `--no-restore` to defer this.
 To explore the Interactive sample's Home, Counter, Weather, and Not Found pages,
 use `dotnet new kiji-interactive -o MySite`. Customize its interactions in the
 `.razor.js` files beside the Razor pages and navigation component.
+
+To start a blog, use `dotnet new kiji-blog -o MyBlog`. Write posts in
+`contents/<post-name>/index.md`; the generated README explains front matter,
+links, RSS, and customization.
 
 ## Publish
 

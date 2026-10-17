@@ -55,7 +55,7 @@ jobs:
           PAGES_BASE_URL: ${{ steps.pages.outputs.base_url || format('https://{0}.github.io/{1}', github.repository_owner, github.event.repository.name) }}
         run: |
           # Add template kinds here; all demos are uploaded and deployed together.
-          ./.github/scripts/build-demos.ps1 -BaseUrl $env:PAGES_BASE_URL -Templates @('minimal', 'interactive')
+          ./.github/scripts/build-demos.ps1 -BaseUrl $env:PAGES_BASE_URL -Templates @('minimal', 'interactive', 'blog')
       - name: Upload Pages site
         if: github.event_name != 'pull_request'
         uses: actions/upload-pages-artifact@fc324d3547104276b827a68afc52ff2a11cc49c9 # v5.0.0

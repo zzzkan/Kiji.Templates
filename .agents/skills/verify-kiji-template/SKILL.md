@@ -38,13 +38,20 @@ Run the checks shared by [CI](../../../.github/workflows/ci.yml) and
 ```
 
 The script validates package definitions and exclusions, checks naming and restore,
-and publishes both templates. It reuses the explicitly named snapshot project for
-Interactive's `/Kiji.Templates/interactive/` deployment; directory-based naming and automatic
-restore are checked separately. Use fresh output directories.
+and publishes all three templates. It reuses the explicitly named snapshot projects
+for Interactive's `/Kiji.Templates/interactive/` and Blog's `/Kiji.Templates/blog/`
+deployments; directory-based naming and automatic restore are checked separately.
+Use fresh output directories.
+
+For Blog, it also adds a Markdown post to the generated project and republishes to
+a separate directory, checking the new route, rendered Markdown, home link, and RSS
+ordering. The browser fixtures retain the original two sample posts.
 
 Keep generated-file snapshots focused on name substitution (project files,
 `Program.cs`, README, Razor imports, and scoped stylesheet references). Do not
 duplicate unchanged page, CSS, JavaScript, or sample-data files.
+Only Interactive's `PageHead.razor` needs a snapshot: its scoped stylesheet name
+contains the project name. Blog's head is covered by browser checks.
 Review `tests/snapshots/*.received/` against `.verified`; never bulk-accept differences
 or copy build output. Publish logs are in `$run/sites/logs/`; CI uploads failure
 diagnostics as `verification-<os>`.
@@ -56,12 +63,16 @@ with the installed package and isolated environment:
 
 ```pwsh
 ./.github/scripts/build-demos.ps1 `
-    -BaseUrl 'https://zzzkan.github.io/Kiji.Templates/' -Templates @('minimal', 'interactive') `
+    -BaseUrl 'https://zzzkan.github.io/Kiji.Templates/' -Templates @('minimal', 'interactive', 'blog') `
     -WorkDirectory "$run/demos" -OutputDirectory "$run/pages"
 if ((Get-Content "$run/pages/minimal/index.html" -Raw) -notmatch 'Hello from Kiji' -or
     (Get-Content "$run/pages/interactive/index.html" -Raw) -notmatch 'Hello, world!' -or
+    (Get-Content "$run/pages/blog/index.html" -Raw) -notmatch 'A place for small notes' -or
     (Get-Content "$run/pages/index.html" -Raw) -notmatch 'href="./minimal/"' -or
     (Get-Content "$run/pages/index.html" -Raw) -notmatch 'href="./interactive/"' -or
+    (Get-Content "$run/pages/index.html" -Raw) -notmatch 'href="./blog/"' -or
+    (Get-Content "$run/pages/blog/feed.xml" -Raw) -notmatch
+        'https://zzzkan.github.io/Kiji.Templates/blog/posts/keeping-a-notebook/' -or
     (Get-Content "$run/demos/minimal/Program.cs" -Raw) -notmatch
         'https://zzzkan.github.io/Kiji.Templates/minimal/') {
     throw 'Demo content, index link, or deployment URL is incorrect.'
@@ -71,7 +82,7 @@ if ((Get-Content "$run/pages/minimal/index.html" -Raw) -notmatch 'Hello from Kij
 Use fresh work and output directories. Inspect links and assets under each demo's
 deployment path. Publish logs are in `$run/demos/logs/` (`demo-build-logs` in CI).
 
-## Interactive browser behavior
+## Browser behavior
 
 After running `verify-templates.ps1`, run the same Chromium checks as CI:
 
@@ -84,11 +95,16 @@ dotnet test tests/Kiji.Templates.BrowserTests -c Release --no-build --logger trx
 ```
 
 The xUnit checks cover accessible content, interactions, and asset/JavaScript errors
-at both URL paths. Review inline ARIA expectations in `InteractiveTests.cs` against the
+at both URL paths. Blog additionally checks dated ordering, Markdown links, metadata,
+RSS, keyboard navigation, mobile overflow, and light/dark colors with JavaScript disabled.
+Review inline ARIA expectations in `InteractiveTests.cs` and `BlogTests.cs` against the
 intended content; never replace them blindly. ARIA snapshots do not check styling:
-inspect desktop/mobile screenshots after layout changes. Actual ARIA snapshots and
-screenshots are in `$run/logs/root/` and `$run/logs/subpath/`.
-The test disposes its static server and browsers, including on failure.
+inspect desktop/mobile screenshots after layout changes. ARIA snapshots and
+screenshots are in `$run/logs/<kind>/root/` and `$run/logs/<kind>/subpath/`.
+For Blog, inspect the home and post views on desktop/mobile and the dark post view
+when its styles change. `PublishedSiteTest` owns the shared static server, request
+error checks, and failure screenshots. The server and browsers are disposed,
+including on failure.
 
 Extend the shared script, snapshots, browser checks, and demo kind lists when adding
 template behavior. For changed directory-install exclusions, verify directory

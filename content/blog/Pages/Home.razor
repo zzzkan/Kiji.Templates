@@ -1,0 +1,21 @@
+@page "/"
+@inject SiteInfo Site
+@inject ContentDictionary<BlogPost> Posts
+
+<PageHead Title="Home" />
+
+<h1>A place for small notes</h1>
+<p>@Site.Description</p>
+
+<section aria-labelledby="posts-heading">
+    <h2 id="posts-heading">Posts</h2>
+    <ul class="post-list">
+        @foreach (var post in Posts.Values.OrderByDescending(post => post.Date).ThenBy(post => post.Slug, StringComparer.Ordinal))
+        {
+            <li>
+                <time datetime="@post.Date.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)">@post.Date.ToString("dd MMM yyyy", CultureInfo.InvariantCulture)</time>
+                <a href="@Site.ResolveUrl(post.Path).AbsolutePath">@post.Title</a>
+            </li>
+        }
+    </ul>
+</section>
