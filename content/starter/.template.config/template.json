@@ -1,0 +1,52 @@
+{
+  "$schema": "https://json.schemastore.org/template",
+  "author": "zzzkan",
+  "classifications": ["Web", "Static Site"],
+  "identity": "Kiji.Starter",
+  "name": "Kiji Starter",
+  "description": "A static site with Home, Counter, and Weather pages, built with Razor, JavaScript, and Kiji.",
+  "shortName": "kiji-starter",
+  "sourceName": "Kiji.Starter",
+  "preferNameDirectory": true,
+  "tags": {
+    "language": "C#",
+    "type": "project"
+  },
+  "constraints": {
+    "sdk": {
+      "type": "sdk-version",
+      "args": "[10.0.100,)"
+    }
+  },
+  "symbols": {
+    "skipRestore": {
+      "type": "parameter",
+      "datatype": "bool",
+      "defaultValue": "false",
+      "description": "Skip the automatic restore of the project on create."
+    }
+  },
+  "sources": [
+    {
+      "modifiers": [
+        {
+          "exclude": ["**/dist/**", "**/.kiji/**", "**/.vs/**"]
+        }
+      ]
+    }
+  ],
+  "primaryOutputs": [
+    { "path": "Kiji.Starter.csproj" }
+  ],
+  "postActions": [
+    {
+      "condition": "(!skipRestore)",
+      "description": "Restore NuGet packages required by this project.",
+      "manualInstructions": [
+        { "text": "Run 'dotnet restore'." }
+      ],
+      "actionId": "210D431B-A78B-4D2F-B762-4ED3E3EA9025",
+      "continueOnError": true
+    }
+  ]
+}

@@ -1,0 +1,33 @@
+@inject SiteInfo Site
+@inject PageInfo Page
+
+<StaticHeadContent>
+    <script type="module" src="@Assets["Layout/NavMenu.razor.js"]"></script>
+</StaticHeadContent>
+
+<div data-nav-menu>
+    <div class="brand-row">
+        <a class="brand" href="@Site.ResolveUrl("").AbsolutePath">@Site.Name</a>
+        <button type="button" class="nav-toggle" aria-label="Navigation menu"
+                aria-controls="site-navigation" aria-expanded="true" hidden>
+            <span aria-hidden="true">☰</span>
+        </button>
+    </div>
+
+    <nav id="site-navigation" aria-label="Main navigation">
+        <a href="@Site.ResolveUrl("").AbsolutePath" aria-current="@Current("")">
+            <span class="nav-icon" aria-hidden="true">⌂</span> Home
+        </a>
+        <a href="@Site.ResolveUrl("counter/").AbsolutePath" aria-current="@Current("counter/")">
+            <span class="nav-icon" aria-hidden="true">＋</span> Counter
+        </a>
+        <a href="@Site.ResolveUrl("weather/").AbsolutePath" aria-current="@Current("weather/")">
+            <span class="nav-icon" aria-hidden="true">☷</span> Weather
+        </a>
+    </nav>
+</div>
+
+@code {
+    private string? Current(string path) =>
+        Page.Url.AbsolutePath == Site.ResolveUrl(path).AbsolutePath ? "page" : null;
+}

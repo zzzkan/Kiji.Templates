@@ -34,87 +34,66 @@ Run the checks shared by [CI](../../../.github/workflows/ci.yml) and
 [releases](../../../.github/workflows/release.yml):
 
 ```pwsh
-dotnet tool run dotnet-template-authoring -- validate $package
-dotnet tool run dotnet-template-authoring -- verify kiji-minimal `
-    --template-path $package `
-    --scenario-name named --template-args "-n Travel.Journal --no-restore" `
-    --output "$run/generated site" --snapshots-directory tests/snapshots `
-    --disable-diff-tool --disable-default-exclude-patterns
-dotnet new install $package
-dotnet new kiji-minimal -o "$run/MySite"
-if (!(Test-Path "$run/MySite/MySite.csproj") -or
-    (Get-Content "$run/MySite/Program.cs" -Raw) -notmatch 'Name = "MySite"' -or
-    (Get-Content "$run/MySite/README.md" -Raw) -notmatch '^# MySite\r?\n') {
-    throw 'The output directory name was not used as the project and site name.'
-}
-dotnet new kiji-minimal -n Travel.Journal -o "$run/named site" --no-restore
-if (!(Test-Path "$run/named site/Travel.Journal.csproj") -or
-    (Get-Content "$run/named site/Program.cs" -Raw) -notmatch 'Name = "Travel.Journal"' -or
-    (Get-Content "$run/named site/README.md" -Raw) -notmatch '^# Travel\.Journal\r?\n') {
-    throw 'The explicit project and site name did not override the output directory name.'
-}
-if ((Test-Path "$run/generated site/kiji-minimal/obj/project.assets.json") -or
-    (Test-Path "$run/named site/obj/project.assets.json")) {
-    throw '--no-restore did not skip dependency restore.'
-}
-
-New-Item -ItemType Directory -Force "$run/logs" | Out-Null
-dotnet publish "$run/MySite/MySite.csproj" -c Release --no-restore "-bl:$run/logs/standard-publish.binlog"
-if ((Get-Content "$run/MySite/dist/index.html" -Raw) -notmatch 'Hello from Kiji') {
-    throw 'Published home page is missing its expected content.'
-}
+./.github/scripts/verify-templates.ps1 -Package $package -RunDirectory "$run/sites"
 ```
 
-Use fresh output directories. Publishing with `--no-restore` checks that project
-creation restored dependencies successfully. The snapshot covers explicit naming
-and `--no-restore`; the separate CLI checks cover directory-based naming and an
-explicit name overriding a different output directory, including README headings.
+The script validates package definitions and exclusions, checks naming and restore,
+and publishes both templates. It reuses the explicitly named snapshot project for
+Starter's `/Kiji.Templates/starter/` deployment; directory-based naming and automatic
+restore are checked separately. Use fresh output directories.
 
-For snapshot failures, compare `tests/snapshots/*.received/` with the reviewed
-`.verified` baseline. Apply only intentional changes; never bulk-accept differences
-or copy build output. For publish failures, inspect `$run/logs/standard-publish.binlog`.
-CI uploads snapshot differences and publish logs as `verification-<os>` on failure.
-
-Choose additional checks based on the change:
-
-- Naming or restore options: extend the CLI checks here and in CI together.
-- Package layout or exclusions: inspect package contents and metadata; test
-  directory installation if its exclusions changed.
-- Preview or clean behavior: run `dotnet watch` or `dotnet clean` in the generated
-  site. Check the served home page and stop every preview process, including on failure.
-- Demo publishing: follow the Pages checks below.
+Keep generated-file snapshots focused on name substitution (project files,
+`Program.cs`, README, Razor imports, and scoped stylesheet references). Do not
+duplicate unchanged page, CSS, JavaScript, or sample-data files.
+Review `tests/snapshots/*.received/` against `.verified`; never bulk-accept differences
+or copy build output. Publish logs are in `$run/sites/logs/`; CI uploads failure
+diagnostics as `verification-<os>`.
 
 ## GitHub Pages demos
 
-[Deploy demos](../../../.github/workflows/pages.yml) packs the current templates,
-generates each demo, and publishes all demos as one Pages artifact. Pull requests
-build only; pushes to `main` and manual runs on `main` deploy. Set the repository's
-Pages source to **GitHub Actions** before the first deployment. The workflow reads
-the configured Pages URL, including a custom domain when present.
-
-Add template kinds to `-Templates` in the workflow. Each template must generate a
-single project with `BaseUrl = new Uri("https://example.com/")` in `Program.cs`.
-The demo builder replaces that placeholder only in generated projects, publishes
-each site under `<kind>/`, and creates a root index linking to every demo.
-
-After the standard checks above, reuse the installed package and isolated environment:
+For demo changes, run the builder used by [Pages](../../../.github/workflows/pages.yml)
+with the installed package and isolated environment:
 
 ```pwsh
 ./.github/scripts/build-demos.ps1 `
-    -BaseUrl 'https://zzzkan.github.io/Kiji.Templates/' -Templates @('minimal') `
+    -BaseUrl 'https://zzzkan.github.io/Kiji.Templates/' -Templates @('minimal', 'starter') `
     -WorkDirectory "$run/demos" -OutputDirectory "$run/pages"
 if ((Get-Content "$run/pages/minimal/index.html" -Raw) -notmatch 'Hello from Kiji' -or
+    (Get-Content "$run/pages/starter/index.html" -Raw) -notmatch 'Hello, world!' -or
     (Get-Content "$run/pages/index.html" -Raw) -notmatch 'href="./minimal/"' -or
+    (Get-Content "$run/pages/index.html" -Raw) -notmatch 'href="./starter/"' -or
     (Get-Content "$run/demos/minimal/Program.cs" -Raw) -notmatch
         'https://zzzkan.github.io/Kiji.Templates/minimal/') {
     throw 'Demo content, index link, or deployment URL is incorrect.'
 }
 ```
 
-Use fresh work and output directories for every build. When adding a template,
-include its kind in the local check and inspect its generated links and assets
-under its deployment path. Demo publish logs are in `$run/demos/logs/`; the workflow
-uploads them as `demo-build-logs` on failure.
+Use fresh work and output directories. Inspect links and assets under each demo's
+deployment path. Publish logs are in `$run/demos/logs/` (`demo-build-logs` in CI).
+
+## Starter browser behavior
+
+After running `verify-templates.ps1`, run the same Chromium checks as CI:
+
+```pwsh
+$env:PLAYWRIGHT_BROWSERS_PATH = "$run/browsers"
+$env:KIJI_VERIFICATION_DIRECTORY = $run
+dotnet build tests/Kiji.Templates.BrowserTests -c Release
+pwsh ./tests/Kiji.Templates.BrowserTests/bin/Release/net10.0/playwright.ps1 install --with-deps --only-shell chromium
+dotnet test tests/Kiji.Templates.BrowserTests -c Release --no-build --logger trx --results-directory "$run/logs"
+```
+
+The xUnit checks cover accessible content, interactions, and asset/JavaScript errors
+at both URL paths. Review inline ARIA expectations in `StarterTests.cs` against the
+intended content; never replace them blindly. ARIA snapshots do not check styling:
+inspect desktop/mobile screenshots after layout changes. Actual ARIA snapshots and
+screenshots are in `$run/logs/root/` and `$run/logs/subpath/`.
+The test disposes its static server and browsers, including on failure.
+
+Extend the shared script, snapshots, browser checks, and demo kind lists when adding
+template behavior. For changed directory-install exclusions, verify directory
+installation too. For preview or clean changes, run `dotnet watch` or `dotnet clean`
+in a generated site and check the result. Stop every preview process, including on failure.
 
 Report checks completed and failures. Remove disposable caches and generated sites
 when no longer needed, preserving useful failure evidence.

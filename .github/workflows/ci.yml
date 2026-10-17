@@ -37,6 +37,8 @@ jobs:
       NUGET_PACKAGES: ${{ github.workspace }}/artifacts/verification/packages
       DOTNET_ADD_GLOBAL_TOOLS_TO_PATH: '0'
       DOTNET_GENERATE_ASPNET_CERTIFICATE: '0'
+      PLAYWRIGHT_BROWSERS_PATH: ${{ github.workspace }}/artifacts/verification/browsers
+      KIJI_VERIFICATION_DIRECTORY: ${{ github.workspace }}/artifacts/verification
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -62,44 +64,15 @@ jobs:
           "TEMPLATE_PACKAGE=$($packages[0].FullName)" >> $env:GITHUB_ENV
       - name: Restore Authoring CLI
         run: dotnet tool restore
-      - name: Validate packaged definitions
-        run: dotnet tool run dotnet-template-authoring -- validate $env:TEMPLATE_PACKAGE
-      - name: Compare generated files
-        run: >-
-          dotnet tool run dotnet-template-authoring -- verify kiji-minimal
-          --template-path $env:TEMPLATE_PACKAGE
-          --scenario-name named --template-args "-n Travel.Journal --no-restore"
-          --output "artifacts/verification/generated site"
-          --snapshots-directory tests/snapshots
-          --disable-diff-tool --disable-default-exclude-patterns
-      - name: Check CLI naming and restore
+      - name: Verify packaged templates and publish generated sites
+        run: ./.github/scripts/verify-templates.ps1 -Package $env:TEMPLATE_PACKAGE -RunDirectory artifacts/verification/sites
+      - name: Install browser checks
         run: |
           $PSNativeCommandUseErrorActionPreference = $true
-          dotnet new install $env:TEMPLATE_PACKAGE
-          dotnet new kiji-minimal -o artifacts/verification/MySite
-          if (!(Test-Path artifacts/verification/MySite/MySite.csproj) -or
-              (Get-Content artifacts/verification/MySite/Program.cs -Raw) -notmatch 'Name = "MySite"' -or
-              (Get-Content artifacts/verification/MySite/README.md -Raw) -notmatch '^# MySite\r?\n') {
-            throw 'The output directory name was not used as the project and site name.'
-          }
-          dotnet new kiji-minimal -n Travel.Journal -o "artifacts/verification/named site" --no-restore
-          if (!(Test-Path "artifacts/verification/named site/Travel.Journal.csproj") -or
-              (Get-Content "artifacts/verification/named site/Program.cs" -Raw) -notmatch 'Name = "Travel.Journal"' -or
-              (Get-Content "artifacts/verification/named site/README.md" -Raw) -notmatch '^# Travel\.Journal\r?\n') {
-            throw 'The explicit project and site name did not override the output directory name.'
-          }
-          if ((Test-Path "artifacts/verification/generated site/kiji-minimal/obj/project.assets.json") -or
-              (Test-Path "artifacts/verification/named site/obj/project.assets.json")) {
-            throw '--no-restore did not skip dependency restore.'
-          }
-      - name: Publish standard CLI site without restoring again
-        run: |
-          $PSNativeCommandUseErrorActionPreference = $true
-          New-Item -ItemType Directory -Force artifacts/verification/logs | Out-Null
-          dotnet publish artifacts/verification/MySite/MySite.csproj -c Release --no-restore -bl:artifacts/verification/logs/standard-publish.binlog
-          if ((Get-Content artifacts/verification/MySite/dist/index.html -Raw) -notmatch 'Hello from Kiji') {
-            throw 'Published home page is missing its expected content.'
-          }
+          dotnet build tests/Kiji.Templates.BrowserTests -c Release
+          pwsh ./tests/Kiji.Templates.BrowserTests/bin/Release/net10.0/playwright.ps1 install --with-deps --only-shell chromium
+      - name: Check browser behavior at root and deployment path
+        run: dotnet test tests/Kiji.Templates.BrowserTests -c Release --no-build --logger trx --results-directory artifacts/verification/logs
       - name: Upload verification diagnostics
         if: failure()
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
@@ -108,6 +81,7 @@ jobs:
           path: |
             tests/snapshots/*.received/**
             artifacts/verification/logs/**
+            artifacts/verification/sites/logs/**
           include-hidden-files: true
           if-no-files-found: ignore
           retention-days: 7
