@@ -4,6 +4,7 @@ obj/
 dist/
 .kiji/
 .vs/
+TestResults/
 
 # Local verification state and packages.
 /artifacts/

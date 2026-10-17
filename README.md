@@ -27,13 +27,7 @@ published URL in `Program.cs`. The generated README covers working on your site.
 Use `-n MySite` to choose a project name independently of its directory.
 Dependencies are restored automatically; add `--no-restore` to defer this.
 
-To explore the Interactive sample's Home, Counter, Weather, and Not Found pages,
-use `dotnet new kiji-interactive -o MySite`. Customize its interactions in the
-`.razor.js` files beside the Razor pages and navigation component.
-
-To start a blog, use `dotnet new kiji-blog -o MyBlog`. Write posts in
-`contents/<post-name>/index.md`; the generated README explains front matter,
-links, RSS, and customization.
+Replace `kiji-minimal` with another short name from the table to choose a template.
 
 ## Publish
 

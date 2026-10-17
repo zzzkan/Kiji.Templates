@@ -9,7 +9,6 @@ on:
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: false
 
 permissions:
   contents: read
@@ -23,11 +22,6 @@ jobs:
     defaults:
       run:
         shell: pwsh
-    env:
-      DOTNET_CLI_HOME: ${{ github.workspace }}/artifacts/verification/cli
-      NUGET_PACKAGES: ${{ github.workspace }}/artifacts/verification/packages
-      DOTNET_ADD_GLOBAL_TOOLS_TO_PATH: '0'
-      DOTNET_GENERATE_ASPNET_CERTIFICATE: '0'
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -40,30 +34,31 @@ jobs:
         id: pages
         uses: actions/configure-pages@45bfe0192ca1faeb007ade9deae92b16b8254a0d # v6.0.0
       - name: Pack templates
-        run: dotnet pack src/Kiji.Templates/Kiji.Templates.csproj -c Release -o artifacts/verification/packed
+        run: dotnet pack src/Kiji.Templates/Kiji.Templates.csproj -c Release
       - name: Build demos
+        timeout-minutes: 15
         env:
           # Pull requests build without requiring Pages configuration or write access.
           PAGES_BASE_URL: ${{ steps.pages.outputs.base_url || format('https://{0}.github.io/{1}', github.repository_owner, github.event.repository.name) }}
         run: >-
-          dotnet run --file src/build-demos.cs -- artifacts/verification/packed
-          "$env:PAGES_BASE_URL" artifacts/verification/demos artifacts/verification/pages
+          ./.github/scripts/build-demos.ps1 -PackagePath src/Kiji.Templates/bin/Release
+          -BaseUrl "$env:PAGES_BASE_URL" -WorkDirectory obj/demos -OutputDirectory dist
       - name: Upload Pages site
         if: github.event_name != 'pull_request'
         uses: actions/upload-pages-artifact@fc324d3547104276b827a68afc52ff2a11cc49c9 # v5.0.0
         with:
-          path: artifacts/verification/pages
+          path: dist
       - name: Upload build diagnostics
         if: failure()
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: demo-build-logs
-          path: artifacts/verification/demos/logs/**
+          path: obj/demos/logs/**
           if-no-files-found: ignore
           retention-days: 7
 
   deploy:
-    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
+    if: github.ref == 'refs/heads/main'
     needs: build
     runs-on: ubuntu-latest
     permissions:

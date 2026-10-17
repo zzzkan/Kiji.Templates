@@ -8,24 +8,20 @@ description: Verify Kiji.Templates changes or an existing NuGet package, and dia
 Use the SDK in `global.json`. After template or packaging changes, run the package
 and generated-site tests; `dotnet pack` alone does not cover site behavior.
 
-Prepare isolated state at the repository root (PowerShell example):
+Run from the repository root. Pack and test with the same configuration; tests
+use `src/Kiji.Templates/bin/<Configuration>`, which must contain exactly one
+`.nupkg`. To select a file or another directory, use `--environment` below.
+Keep the normal SDK, NuGet, Playwright, and build-server defaults; no shell
+environment setup or additional `dotnet tool` installation is needed.
+Tests and demos isolate template registrations using
+[`--debug:custom-hive`](https://github.com/dotnet/templating/wiki/Reserved-Aliases).
+Verify installation and generation when upgrading the SDK.
+
+Pack when validating source changes. Skip this command when verifying an existing
+artifact; never repack it.
 
 ```pwsh
-$env:KIJI_VERIFICATION_DIRECTORY = "$PWD/artifacts/verification"
-$env:DOTNET_CLI_HOME = "$env:KIJI_VERIFICATION_DIRECTORY/cli"
-$env:NUGET_PACKAGES = "$env:KIJI_VERIFICATION_DIRECTORY/packages"
-$env:PLAYWRIGHT_BROWSERS_PATH = "$env:KIJI_VERIFICATION_DIRECTORY/browsers"
-$env:DOTNET_ADD_GLOBAL_TOOLS_TO_PATH = '0'
-$env:DOTNET_GENERATE_ASPNET_CERTIFICATE = '0'
-```
-
-Pack into a fresh directory, or skip packing and set `KIJI_TEMPLATE_PACKAGE` to
-the absolute path of an existing `.nupkg`. A directory containing exactly one
-`.nupkg` is also accepted. Never repack an existing artifact to verify it.
-
-```pwsh
-$env:KIJI_TEMPLATE_PACKAGE = "$env:KIJI_VERIFICATION_DIRECTORY/packed-$([Guid]::NewGuid().ToString('N'))"
-dotnet pack src/Kiji.Templates/Kiji.Templates.csproj -c Release -o $env:KIJI_TEMPLATE_PACKAGE
+dotnet pack src/Kiji.Templates/Kiji.Templates.csproj -c Release
 ```
 
 Run the same checks as [CI](../../../.github/workflows/ci.yml):
@@ -33,56 +29,72 @@ Run the same checks as [CI](../../../.github/workflows/ci.yml):
 ```pwsh
 dotnet build src/Kiji.Templates.Tests -c Release
 pwsh ./src/Kiji.Templates.Tests/bin/Release/net10.0/playwright.ps1 install --with-deps --only-shell chromium
-dotnet test src/Kiji.Templates.Tests -c Release --no-build --logger trx --results-directory "$env:KIJI_VERIFICATION_DIRECTORY/logs"
+dotnet test --project src/Kiji.Templates.Tests -c Release --no-build --report-xunit-trx
 ```
 
-Run each command only after the preceding command succeeds. No additional
-`dotnet tool` installation is required. `Microsoft.TemplateEngine.Authoring.Tasks`
-validates source definitions during build; `PackageTests` invokes its MSBuild
-validation target against the supplied package without building or packing it.
+Run each command only after the preceding command succeeds. For an existing
+package or a custom pack output, append
+`--environment "KIJI_TEMPLATE_PACKAGE=<nupkg-or-directory>"` to the test command.
+The directory must contain exactly one `.nupkg`; relative paths resolve from the
+repository root. Missing or invalid package input fails; tests never repack it.
+Append `--filter-class '*PackageTests'` for package checks only, or `--help` for
+available options. Filtered tests prepare their own prerequisites.
 
-Tests discover templates from the package, compare the list with
-`src/Kiji.Templates/content/`, and check package exclusions. Every template gets
-two generation/publish/browser
-cases: directory-based naming with automatic restore at `/`, and explicit naming
-with `--no-restore` at `/Kiji.Templates/<kind>/`. Naming assertions replace
-generated-file snapshots. New templates automatically join these common cases.
+Tests validate package definitions and exclusions, compare templates with
+`src/Kiji.Templates/content/`, and verify each template at `/` with directory-based
+naming and automatic restore, and at `/Kiji.Templates/<kind>/` with explicit naming
+and `--no-restore`. Interactive and Blog add browser checks; Blog also checks
+publishing a new Markdown article, its home link, and RSS.
 
-Interactive and Blog retain their specific browser checks. Blog also adds a
-Markdown article to an independent generated project and checks the page, home
-link, and RSS. Tests lazily prepare their sites, so filtered tests work without
-running other tests first.
-
-Each test run uses a fresh `tests-<id>/` under `KIJI_VERIFICATION_DIRECTORY`.
+Each test run uses a fresh `tests-<id>/` under the repository's `TestResults/`.
 Command output, publish/validation binlogs, ARIA output, and browser screenshots
-are under that run's `logs/`; TRX files are in the requested results directory.
+are under that run's `logs/`. TRX reports go to `TestResults/` by default;
+`--results-directory` changes only the report location.
+After successful verification, the fixture removes only the generated projects'
+`bin/` and `obj/` directories, retaining source, published `dist/`, and diagnostics.
+Failed or cancelled runs retain build output for investigation. Every test class
+using `TemplateFixture` must record its result during teardown, after any browser
+cleanup, so assertion and cleanup failures also preserve build output.
 CI uploads these logs on failure. Read stdout/stderr and the binlog for the failed
 command before changing tests or template content.
 
 Review inline ARIA expectations in `InteractiveTests.cs` and `BlogTests.cs`
 deliberately; never replace them blindly. ARIA assertions do not check styling.
 After layout changes, inspect the desktop/mobile screenshots, including Blog's
-home, post, and dark post views. Preview servers and browsers are disposed on
-failure as well as success.
+home, post, and dark post views.
 
 ## GitHub Pages demos
 
-Use the builder shared with [Pages](../../../.github/workflows/pages.yml):
+Use the PowerShell builder in `.github/scripts/`, shared with
+[Pages](../../../.github/workflows/pages.yml):
 
 ```pwsh
-dotnet run --file src/build-demos.cs -- $env:KIJI_TEMPLATE_PACKAGE 'https://zzzkan.github.io/Kiji.Templates/' "$env:KIJI_VERIFICATION_DIRECTORY/demos" "$env:KIJI_VERIFICATION_DIRECTORY/pages"
+pwsh ./.github/scripts/build-demos.ps1 -PackagePath src/Kiji.Templates/bin/Release -BaseUrl 'https://zzzkan.github.io/Kiji.Templates/' -WorkDirectory obj/demos -OutputDirectory dist
 ```
 
-Use fresh work and output directories. The builder discovers all templates in
-the package, installs it in isolated CLI state, sets each generated site's BaseUrl,
-publishes, and writes the demo index. Inspect links and assets at each deployment
-path. Command output and binlogs are in the work directory's `logs/`.
+Set `-PackagePath` to the existing package path when verifying one. Relative paths
+resolve from the repository root. Use fresh work and output directories.
+The builder publishes every packaged template at its demo URL and writes the
+index. Inspect links and assets at each deployment path. Command output and
+binlogs are in the work directory's `logs/`.
+PowerShell stops the builder on a failed `dotnet` command. Pages limits the build
+step to 15 minutes; local runs have no automatic timeout and can be interrupted
+with Ctrl+C.
 
 Add specific tests only for new template behavior. For changes to directory-install
 exclusions, also verify directory installation. For preview or clean changes, run
 `dotnet watch` or `dotnet clean` in a generated project and check the result.
-Stop every preview process, including on failure.
+Stop every preview process and dispose browsers, including on failure.
 
 Report completed checks and limitations. Preserve useful diagnostics when
-removing disposable caches or generated sites. Releases must test the same package
-on Windows and Linux, then publish that file without repacking.
+removing disposable caches or generated sites.
+
+## Releases
+
+[Release](../../../.github/workflows/release.yml) requires a successful main push
+run of `ci.yml` for the exact tagged commit. CI covers Windows and Linux; release
+does not repeat those tests. After checking CI, release packs the tagged version
+once and publishes it through NuGet trusted publishing.
+
+If CI is pending, failed, or missing, release stops before packing. Rerun Release
+after that commit's main CI succeeds. Pages deploys independently.

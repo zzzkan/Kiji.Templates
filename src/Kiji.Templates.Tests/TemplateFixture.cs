@@ -1,4 +1,7 @@
-using Kiji.Templates.Infrastructure;
+using System.IO.Compression;
+using System.Reflection;
+using System.Text.Json;
+using CliWrap;
 using Xunit;
 
 namespace Kiji.Templates.Tests;
@@ -9,22 +12,47 @@ public sealed class TemplateCollection : ICollectionFixture<TemplateFixture>;
 public sealed class TemplateFixture : IAsyncLifetime
 {
     internal static string Repository { get; } = FindRepository();
-    internal static TemplatePackage Package { get; } = new(
-        Environment.GetEnvironmentVariable("KIJI_TEMPLATE_PACKAGE")
-        ?? throw new InvalidOperationException("Set KIJI_TEMPLATE_PACKAGE to an existing .nupkg or a directory containing one package."));
+    internal static string PackagePath { get; } = FindPackage();
+    internal static Template[] Templates { get; } = ReadTemplates();
 
-    internal string RunDirectory { get; } = Path.Combine(Path.GetFullPath(
-        Environment.GetEnvironmentVariable("KIJI_VERIFICATION_DIRECTORY")
-        ?? Path.Combine(Repository, "artifacts", "verification")), $"tests-{Guid.NewGuid():N}");
-    internal DotnetCli Dotnet { get; }
+    private string RunDirectory { get; } = Path.Combine(
+        Repository, "TestResults", $"tests-{Guid.NewGuid():N}");
+    internal string Logs { get; }
     private readonly Dictionary<(string, bool), Task<PublishedSite>> sites = [];
+    private readonly HashSet<string> projects = [];
+    private bool preserveBuildOutput;
 
-    public TemplateFixture() => Dotnet = new(Repository, RunDirectory);
+    public TemplateFixture() => Logs = Directory.CreateDirectory(Path.Combine(RunDirectory, "logs")).FullName;
 
-    public async ValueTask InitializeAsync() => await Dotnet.Run("install", TestContext.Current.CancellationToken,
-        "new", "install", Package.Path);
+    public async ValueTask InitializeAsync() => await RunDotnet("install", "new", "install", PackagePath);
 
-    public ValueTask DisposeAsync() => ValueTask.CompletedTask;
+    public ValueTask DisposeAsync()
+    {
+        if (!preserveBuildOutput && !TestContext.Current.CancellationToken.IsCancellationRequested)
+        {
+            foreach (var project in projects)
+            {
+                foreach (var name in new[] { "bin", "obj" })
+                {
+                    var directory = Path.GetFullPath(Path.Combine(project, name));
+                    Assert.StartsWith(Path.GetFullPath(RunDirectory) + Path.DirectorySeparatorChar, directory,
+                        OperatingSystem.IsWindows() ? StringComparison.OrdinalIgnoreCase : StringComparison.Ordinal);
+                    if (Directory.Exists(directory))
+                        Directory.Delete(directory, recursive: true);
+                }
+            }
+        }
+        return ValueTask.CompletedTask;
+    }
+
+    // Called from each test's teardown, after assertions and browser cleanup.
+    internal void RecordTestResult(bool cleanupSucceeded = true) =>
+        preserveBuildOutput |= !cleanupSucceeded || TestContext.Current.TestState?.Result != TestResult.Passed;
+
+    internal Task ValidatePackage() => RunDotnet("validate",
+        "msbuild", Path.Combine(Repository, "src", "Kiji.Templates", "Kiji.Templates.csproj"), "-restore",
+        "-target:ValidateTemplatesAfterBuild", $"-property:ValidateTemplatesPath={PackagePath}",
+        $"-bl:{Path.Combine(Logs, "validate.binlog")}");
 
     internal Task<PublishedSite> GetSite(string kind, bool subpath)
     {
@@ -44,18 +72,21 @@ public sealed class TemplateFixture : IAsyncLifetime
 
     internal async Task<PublishedSite> GenerateSite(string kind, bool subpath, string? scenario = null)
     {
-        var template = Package.Templates.Single(template => template.Kind == kind);
+        var template = Templates.Single(template => template.Kind == kind);
         var name = subpath ? "Travel.Journal" : "MySite";
         var caseName = scenario ?? (subpath ? "subpath" : "root");
         var project = Path.Combine(RunDirectory, "sites", kind, caseName, "MySite");
+        projects.Add(project);
         var prefix = subpath ? $"/Kiji.Templates/{kind}/" : "/";
         var site = new PublishedSite(project, Path.Combine(project, "dist"), prefix, name, $"{kind}-{caseName}");
         string[] options = subpath ? ["--name", name, "--no-restore"] : [];
-        await Dotnet.Run($"{site.Label}-new", TestContext.Current.CancellationToken,
+        await RunDotnet($"{site.Label}-new",
             ["new", template.ShortName, "--output", project, .. options]);
 
         Assert.True(File.Exists(Path.Combine(project, $"{name}.csproj")), $"Missing {name}.csproj");
-        Assert.Contains($"Name = \"{name}\"", await File.ReadAllTextAsync(Path.Combine(project, "Program.cs")));
+        var programPath = Path.Combine(project, "Program.cs");
+        var program = await File.ReadAllTextAsync(programPath);
+        Assert.Contains($"Name = \"{name}\"", program);
         Assert.Equal($"# {name}", File.ReadLines(Path.Combine(project, "README.md")).First());
         Assert.Equal(!subpath, File.Exists(Path.Combine(project, "obj", "project.assets.json")));
         foreach (var file in Directory.EnumerateFiles(project, "*", SearchOption.AllDirectories)
@@ -69,8 +100,6 @@ public sealed class TemplateFixture : IAsyncLifetime
 
         if (subpath)
         {
-            var programPath = Path.Combine(project, "Program.cs");
-            var program = await File.ReadAllTextAsync(programPath);
             Assert.Contains("https://example.com/", program);
             await File.WriteAllTextAsync(programPath, program.Replace("https://example.com/", $"https://example.com{prefix}"));
         }
@@ -80,10 +109,62 @@ public sealed class TemplateFixture : IAsyncLifetime
     internal async Task Publish(PublishedSite site, bool noRestore = false)
     {
         string[] options = noRestore ? ["--no-restore"] : [];
-        await Dotnet.Run($"{site.Label}-publish", TestContext.Current.CancellationToken,
+        await RunDotnet($"{site.Label}-publish",
             ["publish", Path.Combine(site.Project, $"{site.Name}.csproj"), "-c", "Release", "-o", site.Output,
-                "--disable-build-servers", $"-bl:{Path.Combine(Dotnet.Logs, site.Label)}.binlog", .. options]);
+                $"-bl:{Path.Combine(Logs, site.Label)}.binlog", .. options]);
         Assert.False(string.IsNullOrWhiteSpace(await File.ReadAllTextAsync(Path.Combine(site.Output, "index.html"))));
+    }
+
+    private async Task RunDotnet(string label, params string[] arguments)
+    {
+        using var timeout = CancellationTokenSource.CreateLinkedTokenSource(TestContext.Current.CancellationToken);
+        timeout.CancelAfter(TimeSpan.FromMinutes(5));
+        // Isolate template registration while keeping the normal SDK state and caches.
+        if (arguments is ["new", ..])
+            arguments = [.. arguments, "--debug:custom-hive", Path.Combine(RunDirectory, "templates")];
+        var command = Cli.Wrap("dotnet")
+            .WithArguments(arguments)
+            .WithWorkingDirectory(Repository)
+            .WithStandardOutputPipe(PipeTarget.ToFile(Path.Combine(Logs, $"{label}.stdout.log")))
+            .WithStandardErrorPipe(PipeTarget.ToFile(Path.Combine(Logs, $"{label}.stderr.log")));
+        try
+        {
+            await command.ExecuteAsync(timeout.Token);
+        }
+        catch (Exception exception)
+        {
+            throw new InvalidOperationException($"{command} failed. See {Logs}/{label}.*.log", exception);
+        }
+    }
+
+    private static string FindPackage()
+    {
+        var path = Path.GetFullPath(Environment.GetEnvironmentVariable("KIJI_TEMPLATE_PACKAGE")
+            ?? Path.Combine("src", "Kiji.Templates", "bin",
+                typeof(TemplateFixture).Assembly.GetCustomAttribute<AssemblyConfigurationAttribute>()!.Configuration), Repository);
+        return Directory.Exists(path) ? Directory.GetFiles(path, "*.nupkg").Single() : path;
+    }
+
+    private static Template[] ReadTemplates()
+    {
+        using var archive = ZipFile.OpenRead(PackagePath);
+        var templates = archive.Entries
+            .Where(entry => entry.FullName.Split('/') is ["content", _, ".template.config", "template.json"])
+            .Select(entry =>
+            {
+                using var stream = entry.Open();
+                using var json = JsonDocument.Parse(stream);
+                var definition = json.RootElement;
+                return new Template(entry.FullName.Split('/')[1],
+                    definition.GetProperty("shortName").GetString()!,
+                    definition.GetProperty("identity").GetString()!,
+                    definition.GetProperty("sourceName").GetString()!);
+            })
+            .OrderBy(template => template.Kind, StringComparer.Ordinal)
+            .ToArray();
+        if (templates.Length == 0)
+            throw new InvalidOperationException($"No templates found in {PackagePath}.");
+        return templates;
     }
 
     private static string FindRepository()
@@ -93,6 +174,8 @@ public sealed class TemplateFixture : IAsyncLifetime
                 return directory.FullName;
         throw new InvalidOperationException("Run the tests from a Kiji.Templates checkout.");
     }
+
+    internal sealed record Template(string Kind, string ShortName, string Identity, string SourceName);
 }
 
 internal sealed record PublishedSite(string Project, string Output, string Prefix, string Name, string Label);

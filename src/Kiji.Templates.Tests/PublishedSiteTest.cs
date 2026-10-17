@@ -13,12 +13,26 @@ namespace Kiji.Templates.Tests;
 [Collection("Templates")]
 public abstract class PublishedSiteTest(TemplateFixture fixture) : PageTest
 {
+    public override async ValueTask DisposeAsync()
+    {
+        var cleanupSucceeded = false;
+        try
+        {
+            await base.DisposeAsync();
+            cleanupSucceeded = true;
+        }
+        finally
+        {
+            fixture.RecordTestResult(cleanupSucceeded);
+        }
+    }
+
     protected async Task VerifySite(string template, bool subpath,
         Func<string, string, Task> verify)
     {
         var site = await fixture.GetSite(template, subpath);
         var prefix = site.Prefix;
-        var diagnostics = Path.Combine(fixture.Dotnet.Logs, template, subpath ? "subpath" : "root");
+        var diagnostics = Path.Combine(fixture.Logs, template, subpath ? "subpath" : "root");
         Directory.CreateDirectory(diagnostics);
 
         using var files = new PhysicalFileProvider(site.Output);
@@ -26,9 +40,7 @@ public abstract class PublishedSiteTest(TemplateFixture fixture) : PageTest
         builder.Logging.ClearProviders();
         builder.WebHost.ConfigureKestrel(options => options.Listen(IPAddress.Loopback, 0));
         await using var app = builder.Build();
-        var requestPath = prefix.TrimEnd('/');
-        app.UseDefaultFiles(new DefaultFilesOptions { FileProvider = files, RequestPath = requestPath });
-        app.UseStaticFiles(new StaticFileOptions { FileProvider = files, RequestPath = requestPath });
+        app.UseFileServer(new FileServerOptions { FileProvider = files, RequestPath = prefix.TrimEnd('/') });
         await app.StartAsync(TestContext.Current.CancellationToken);
 
         try

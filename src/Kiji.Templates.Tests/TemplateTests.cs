@@ -9,7 +9,7 @@ public sealed class TemplateTests(TemplateFixture fixture) : PublishedSiteTest(f
         get
         {
             var cases = new TheoryData<string, bool>();
-            foreach (var template in TemplateFixture.Package.Templates)
+            foreach (var template in TemplateFixture.Templates)
             {
                 cases.Add(template.Kind, false);
                 cases.Add(template.Kind, true);

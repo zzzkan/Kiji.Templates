@@ -4,8 +4,10 @@ using Xunit;
 namespace Kiji.Templates.Tests;
 
 [Collection("Templates")]
-public sealed class BlogAuthoringTests(TemplateFixture fixture)
+public sealed class BlogAuthoringTests(TemplateFixture fixture) : IDisposable
 {
+    public void Dispose() => fixture.RecordTestResult();
+
     [Fact]
     public async Task AddedMarkdownPostAppearsInPageHomeAndFeed()
     {
