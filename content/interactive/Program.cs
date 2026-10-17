@@ -1,12 +1,12 @@
 using Kiji;
-using Kiji.Starter.Layout;
-using Kiji.Starter.Pages;
+using Kiji.Interactive.Layout;
+using Kiji.Interactive.Pages;
 
 var app = StaticSite.Create(args);
 app.Info = new SiteInfo
 {
     BaseUrl = new Uri("https://example.com/"),
-    Name = "Kiji.Starter",
+    Name = "Kiji.Interactive",
 };
 app.UseDefaultLayout<MainLayout>();
 app.AddPages();

@@ -2,11 +2,11 @@
   "$schema": "https://json.schemastore.org/template",
   "author": "zzzkan",
   "classifications": ["Web", "Static Site"],
-  "identity": "Kiji.Starter",
-  "name": "Kiji Starter",
-  "description": "A static site with Home, Counter, and Weather pages, built with Razor, JavaScript, and Kiji.",
-  "shortName": "kiji-starter",
-  "sourceName": "Kiji.Starter",
+  "identity": "Kiji.Interactive",
+  "name": "Kiji Interactive",
+  "description": "A sample site recreating the familiar Blazor WebAssembly template pages with Razor, Kiji, and JavaScript interactions.",
+  "shortName": "kiji-interactive",
+  "sourceName": "Kiji.Interactive",
   "preferNameDirectory": true,
   "tags": {
     "language": "C#",
@@ -36,7 +36,7 @@
     }
   ],
   "primaryOutputs": [
-    { "path": "Kiji.Starter.csproj" }
+    { "path": "Kiji.Interactive.csproj" }
   ],
   "postActions": [
     {

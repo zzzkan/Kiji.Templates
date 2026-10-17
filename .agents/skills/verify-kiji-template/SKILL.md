@@ -39,7 +39,7 @@ Run the checks shared by [CI](../../../.github/workflows/ci.yml) and
 
 The script validates package definitions and exclusions, checks naming and restore,
 and publishes both templates. It reuses the explicitly named snapshot project for
-Starter's `/Kiji.Templates/starter/` deployment; directory-based naming and automatic
+Interactive's `/Kiji.Templates/interactive/` deployment; directory-based naming and automatic
 restore are checked separately. Use fresh output directories.
 
 Keep generated-file snapshots focused on name substitution (project files,
@@ -56,12 +56,12 @@ with the installed package and isolated environment:
 
 ```pwsh
 ./.github/scripts/build-demos.ps1 `
-    -BaseUrl 'https://zzzkan.github.io/Kiji.Templates/' -Templates @('minimal', 'starter') `
+    -BaseUrl 'https://zzzkan.github.io/Kiji.Templates/' -Templates @('minimal', 'interactive') `
     -WorkDirectory "$run/demos" -OutputDirectory "$run/pages"
 if ((Get-Content "$run/pages/minimal/index.html" -Raw) -notmatch 'Hello from Kiji' -or
-    (Get-Content "$run/pages/starter/index.html" -Raw) -notmatch 'Hello, world!' -or
+    (Get-Content "$run/pages/interactive/index.html" -Raw) -notmatch 'Hello, world!' -or
     (Get-Content "$run/pages/index.html" -Raw) -notmatch 'href="./minimal/"' -or
-    (Get-Content "$run/pages/index.html" -Raw) -notmatch 'href="./starter/"' -or
+    (Get-Content "$run/pages/index.html" -Raw) -notmatch 'href="./interactive/"' -or
     (Get-Content "$run/demos/minimal/Program.cs" -Raw) -notmatch
         'https://zzzkan.github.io/Kiji.Templates/minimal/') {
     throw 'Demo content, index link, or deployment URL is incorrect.'
@@ -71,7 +71,7 @@ if ((Get-Content "$run/pages/minimal/index.html" -Raw) -notmatch 'Hello from Kij
 Use fresh work and output directories. Inspect links and assets under each demo's
 deployment path. Publish logs are in `$run/demos/logs/` (`demo-build-logs` in CI).
 
-## Starter browser behavior
+## Interactive browser behavior
 
 After running `verify-templates.ps1`, run the same Chromium checks as CI:
 
@@ -84,7 +84,7 @@ dotnet test tests/Kiji.Templates.BrowserTests -c Release --no-build --logger trx
 ```
 
 The xUnit checks cover accessible content, interactions, and asset/JavaScript errors
-at both URL paths. Review inline ARIA expectations in `StarterTests.cs` against the
+at both URL paths. Review inline ARIA expectations in `InteractiveTests.cs` against the
 intended content; never replace them blindly. ARIA snapshots do not check styling:
 inspect desktop/mobile screenshots after layout changes. Actual ARIA snapshots and
 screenshots are in `$run/logs/root/` and `$run/logs/subpath/`.

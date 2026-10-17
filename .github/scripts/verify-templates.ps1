@@ -25,7 +25,7 @@ try {
 dotnet new install $Package
 New-Item -ItemType Directory -Force "$RunDirectory/logs" | Out-Null
 
-foreach ($kind in @('minimal', 'starter')) {
+foreach ($kind in @('minimal', 'interactive')) {
     $output = "$RunDirectory/$kind"
     if (Test-Path $output) {
         throw "Use a fresh verification directory: $output"
@@ -60,11 +60,11 @@ foreach ($kind in @('minimal', 'starter')) {
     if (!$homeHtml.Contains($expected)) {
         throw "${kind}: Published home page is missing its expected content."
     }
-    if ($kind -eq 'starter') {
+    if ($kind -eq 'interactive') {
         $programPath = "$namedSite/Program.cs"
-        (Get-Content $programPath -Raw).Replace('https://example.com/', 'https://example.com/Kiji.Templates/starter/') |
+        (Get-Content $programPath -Raw).Replace('https://example.com/', 'https://example.com/Kiji.Templates/interactive/') |
             Set-Content $programPath -NoNewline
         dotnet publish "$namedSite/Travel.Journal.csproj" -c Release -o "$output/subpath" `
-            "-bl:$RunDirectory/logs/starter-subpath-publish.binlog"
+            "-bl:$RunDirectory/logs/interactive-subpath-publish.binlog"
     }
 }

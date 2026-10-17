@@ -10,7 +10,7 @@ using Xunit;
 
 namespace Kiji.Templates.BrowserTests;
 
-public class StarterTests : PageTest
+public class InteractiveTests : PageTest
 {
     public override BrowserNewContextOptions ContextOptions() => new()
     {
@@ -21,12 +21,12 @@ public class StarterTests : PageTest
 
     [Theory]
     [InlineData("MySite/dist", "/", "root")]
-    [InlineData("subpath", "/Kiji.Templates/starter/", "subpath")]
-    public async Task PublishedStarterWorks(string siteDirectory, string prefix, string caseName)
+    [InlineData("subpath", "/Kiji.Templates/interactive/", "subpath")]
+    public async Task PublishedInteractiveWorks(string siteDirectory, string prefix, string caseName)
     {
         var run = Environment.GetEnvironmentVariable("KIJI_VERIFICATION_DIRECTORY")
             ?? throw new InvalidOperationException("Set KIJI_VERIFICATION_DIRECTORY to the verification output directory.");
-        var root = Path.GetFullPath(Path.Combine(run, "sites", "starter", siteDirectory));
+        var root = Path.GetFullPath(Path.Combine(run, "sites", "interactive", siteDirectory));
         var diagnostics = Path.Combine(run, "logs", caseName);
         Directory.CreateDirectory(diagnostics);
 

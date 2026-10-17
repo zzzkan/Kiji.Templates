@@ -1,8 +1,8 @@
-# Travel.Journal
+# Kiji.Interactive
 
-A static website with the Home, Counter, Weather, and Not Found pages familiar
-from the Blazor WebAssembly template. Built with Razor and Kiji, with browser
-interactions in JavaScript. Requires the .NET 10 SDK.
+A sample static website recreating the Home, Counter, Weather, and Not Found
+pages familiar from the Blazor WebAssembly template. Built with Razor and Kiji,
+with browser interactions in JavaScript. Requires the .NET 10 SDK.
 
 ## Preview and edit
 
