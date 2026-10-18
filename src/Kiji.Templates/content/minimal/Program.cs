@@ -6,6 +6,8 @@ app.Info = new SiteInfo
     BaseUrl = new Uri("https://example.com/"),
     Name = "Kiji.Minimal",
     Description = "A minimal site with a single home page.",
+    Language = "en",
+    Author = "zzzkan",
 };
 
 app.AddPages();

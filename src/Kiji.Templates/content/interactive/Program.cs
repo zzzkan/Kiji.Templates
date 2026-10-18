@@ -7,6 +7,9 @@ app.Info = new SiteInfo
 {
     BaseUrl = new Uri("https://example.com/"),
     Name = "Kiji.Interactive",
+    Description = "Familiar Blazor template pages with JavaScript interactions.",
+    Language = "en",
+    Author = "zzzkan",
 };
 
 app.UseDefaultLayout<MainLayout>();
