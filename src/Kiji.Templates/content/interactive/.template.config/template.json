@@ -4,7 +4,7 @@
   "classifications": ["Web", "Static Site"],
   "identity": "Kiji.Interactive",
   "name": "Kiji Interactive",
-  "description": "A sample site recreating the familiar Blazor WebAssembly template pages with Razor, Kiji, and JavaScript interactions.",
+  "description": "Familiar Blazor template pages with JavaScript interactions.",
   "shortName": "kiji-interactive",
   "sourceName": "Kiji.Interactive",
   "preferNameDirectory": true,
@@ -30,21 +30,17 @@
     {
       "modifiers": [
         {
-          "exclude": ["**/dist/**", "**/.kiji/**", "**/.vs/**"]
+          "exclude": ["dist/**", "**/.kiji/**", "**/.vs/**"]
         }
       ]
     }
   ],
-  "primaryOutputs": [
-    { "path": "Kiji.Interactive.csproj" }
-  ],
+  "primaryOutputs": [{ "path": "Kiji.Interactive.csproj" }],
   "postActions": [
     {
       "condition": "(!skipRestore)",
       "description": "Restore NuGet packages required by this project.",
-      "manualInstructions": [
-        { "text": "Run 'dotnet restore'." }
-      ],
+      "manualInstructions": [{ "text": "Run 'dotnet restore'." }],
       "actionId": "210D431B-A78B-4D2F-B762-4ED3E3EA9025",
       "continueOnError": true
     }

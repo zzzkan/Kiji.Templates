@@ -2,6 +2,7 @@
 bin/
 obj/
 dist/
+!src/Kiji.Templates/content/interactive/wwwroot/lib/bootstrap/dist/
 .kiji/
 .vs/
 TestResults/

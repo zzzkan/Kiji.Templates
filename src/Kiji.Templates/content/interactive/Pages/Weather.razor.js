@@ -1,9 +1,9 @@
 const weather = document.querySelector('[data-weather]');
 const status = weather.querySelector('[role="status"]');
-const table = weather.querySelector('.table-scroll');
+const table = weather.querySelector('.table-responsive');
 const body = weather.querySelector('tbody');
 
-status.textContent = 'Loading...';
+status.querySelector('em').textContent = 'Loading...';
 status.hidden = false;
 
 try {

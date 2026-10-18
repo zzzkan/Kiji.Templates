@@ -1,14 +1,19 @@
 @inject SiteInfo Site
+@inject PageInfo Page
 
 <StaticHeadContent>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>@Title - @Site.Name</title>
-    <link rel="stylesheet" href="@Assets["css/app.css"]" />
-    <link rel="stylesheet" href="@Assets["Kiji.Interactive.styles.css"]" />
-    <link rel="icon" type="image/svg+xml" href="@Assets["favicon.svg"]" />
+    <title>@PageTitle</title>
+    <meta name="description" content="@PageDescription" />
+    <link rel="canonical" href="@Page.Url.AbsoluteUri" />
+    <meta property="og:title" content="@PageTitle" />
+    <meta property="og:description" content="@PageDescription" />
+    <meta property="og:url" content="@Page.Url.AbsoluteUri" />
+    <meta property="og:type" content="website" />
 </StaticHeadContent>
 
 @code {
-    [Parameter, EditorRequired] public string Title { get; set; } = string.Empty;
+    [Parameter, EditorRequired] public string PageTitle { get; set; } = string.Empty;
+    [Parameter] public string? Description { get; set; }
+
+    private string? PageDescription => Description ?? Site.Description;
 }

@@ -1,17 +1,28 @@
 @inherits LayoutComponentBase
 
-<a class="skip-link" href="#main-content">Skip to content</a>
-<div class="page">
-    <aside class="sidebar">
-        <NavMenu />
-    </aside>
+<StaticHeadContent>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="@Assets["lib/bootstrap/dist/css/bootstrap.min.css"]" />
+    <link rel="stylesheet" href="@Assets["css/app.css"]" />
+    <link rel="stylesheet" href="@Assets["Kiji.Interactive.styles.css"]" />
+    <link rel="icon" type="image/svg+xml"
+          href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ctext x='32' y='52' text-anchor='middle' font-size='52' font-family='Apple Color Emoji, Segoe UI Emoji, Noto Color Emoji, sans-serif'%3E🚀%3C/text%3E%3C/svg%3E" />
+</StaticHeadContent>
 
-    <div class="main">
-        <header class="top-row">
-            <a href="https://github.com/zzzkan/kiji">About</a>
-        </header>
-        <main id="main-content" tabindex="-1">
-            @Body
-        </main>
+<a class="skip-link visually-hidden-focusable" href="#main-content">Skip to content</a>
+<div class="page">
+    <div class="sidebar">
+        <NavMenu />
     </div>
+
+    <main>
+        <div class="top-row px-4">
+            <a href="https://github.com/zzzkan/kiji" target="_blank" rel="noopener noreferrer">About</a>
+        </div>
+
+        <article class="content px-4" id="main-content" tabindex="-1">
+            @Body
+        </article>
+    </main>
 </div>
