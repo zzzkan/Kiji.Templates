@@ -8,7 +8,9 @@ app.Info = new SiteInfo
     BaseUrl = new Uri("https://example.com/"),
     Name = "Kiji.Interactive",
 };
+
 app.UseDefaultLayout<MainLayout>();
+
 app.AddPages();
 app.AddNotFoundPage<NotFound>();
 

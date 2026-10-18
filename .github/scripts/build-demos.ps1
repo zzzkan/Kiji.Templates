@@ -83,6 +83,8 @@ $links = foreach ($template in ($templates | Sort-Object Kind)) {
     $siteOutput = Join-Path $output $template.Kind
     Invoke-Dotnet "$($template.Kind)-publish" @(
         'publish', $projects[0].FullName, '-c', 'Release', '-o', $siteOutput,
+        '-p:UseCurrentRuntimeIdentifier=true', '-p:SelfContained=false',
+        "-p:CustomAfterMicrosoftCommonTargets=$(Join-Path $PSScriptRoot 'verification.targets')",
         "-bl:$(Join-Path $logs "$($template.Kind).binlog")"
     )
     if (!(Test-Path -LiteralPath (Join-Path $siteOutput 'index.html') -PathType Leaf)) {

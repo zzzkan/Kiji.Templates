@@ -4,7 +4,7 @@
   "classifications": ["Web", "Static Site"],
   "identity": "Kiji.Minimal",
   "name": "Kiji Minimal",
-  "description": "A minimal static site with a single home page, built with Razor and Kiji.",
+  "description": "A minimal site with a single home page.",
   "shortName": "kiji-minimal",
   "sourceName": "Kiji.Minimal",
   "preferNameDirectory": true,
@@ -35,16 +35,12 @@
       ]
     }
   ],
-  "primaryOutputs": [
-    { "path": "Kiji.Minimal.csproj" }
-  ],
+  "primaryOutputs": [{ "path": "Kiji.Minimal.csproj" }],
   "postActions": [
     {
       "condition": "(!skipRestore)",
       "description": "Restore NuGet packages required by this project.",
-      "manualInstructions": [
-        { "text": "Run 'dotnet restore'." }
-      ],
+      "manualInstructions": [{ "text": "Run 'dotnet restore'." }],
       "actionId": "210D431B-A78B-4D2F-B762-4ED3E3EA9025",
       "continueOnError": true
     }

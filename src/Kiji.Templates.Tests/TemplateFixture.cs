@@ -78,7 +78,9 @@ public sealed class TemplateFixture : IAsyncLifetime
         var project = Path.Combine(RunDirectory, "sites", kind, caseName, "MySite");
         projects.Add(project);
         var prefix = subpath ? $"/Kiji.Templates/{kind}/" : "/";
-        var site = new PublishedSite(project, Path.Combine(project, "dist"), prefix, name, $"{kind}-{caseName}");
+        // Keep one ordinary publish as a smoke test of the user's default path.
+        var optimizeBuild = kind != "minimal" || subpath || scenario is not null;
+        var site = new PublishedSite(project, Path.Combine(project, "dist"), prefix, name, $"{kind}-{caseName}", optimizeBuild);
         string[] options = subpath ? ["--name", name, "--no-restore"] : [];
         await RunDotnet($"{site.Label}-new",
             ["new", template.ShortName, "--output", project, .. options]);
@@ -108,11 +110,27 @@ public sealed class TemplateFixture : IAsyncLifetime
 
     internal async Task Publish(PublishedSite site, bool noRestore = false)
     {
+        var projectFile = Path.Combine(site.Project, $"{site.Name}.csproj");
+        string[] buildOptions = site.OptimizeBuild
+            ? ["-p:UseCurrentRuntimeIdentifier=true", "-p:SelfContained=false",
+                $"-p:CustomAfterMicrosoftCommonTargets={Path.Combine(Repository, ".github", "scripts", "verification.targets")}"]
+            : [];
+        // dotnet new's automatic restore has no RID. Prepare the same RID that
+        // publish will use before exercising --no-restore, without editing the project.
+        if (noRestore && site.OptimizeBuild)
+            await RunDotnet($"{site.Label}-restore", ["restore", projectFile, .. buildOptions]);
         string[] options = noRestore ? ["--no-restore"] : [];
         await RunDotnet($"{site.Label}-publish",
-            ["publish", Path.Combine(site.Project, $"{site.Name}.csproj"), "-c", "Release", "-o", site.Output,
-                $"-bl:{Path.Combine(Logs, site.Label)}.binlog", .. options]);
+            ["publish", projectFile, "-c", "Release", "-o", site.Output,
+                $"-bl:{Path.Combine(Logs, site.Label)}.binlog", .. buildOptions, .. options]);
         Assert.False(string.IsNullOrWhiteSpace(await File.ReadAllTextAsync(Path.Combine(site.Output, "index.html"))));
+        if (site.OptimizeBuild)
+        {
+            var nativeFiles = Directory.GetFiles(Path.Combine(site.Project, "bin"), "libSkiaSharp.*", SearchOption.AllDirectories);
+            var nativeLibrary = Assert.Single(nativeFiles);
+            Assert.Equal(OperatingSystem.IsWindows() ? "libSkiaSharp.dll"
+                : OperatingSystem.IsMacOS() ? "libSkiaSharp.dylib" : "libSkiaSharp.so", Path.GetFileName(nativeLibrary));
+        }
     }
 
     private async Task RunDotnet(string label, params string[] arguments)
@@ -178,4 +196,4 @@ public sealed class TemplateFixture : IAsyncLifetime
     internal sealed record Template(string Kind, string ShortName, string Identity, string SourceName);
 }
 
-internal sealed record PublishedSite(string Project, string Output, string Prefix, string Name, string Label);
+internal sealed record PublishedSite(string Project, string Output, string Prefix, string Name, string Label, bool OptimizeBuild);

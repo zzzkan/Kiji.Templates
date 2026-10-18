@@ -1,0 +1,13 @@
+<Project>
+  <!-- Opt in only through verification commands, never through a template or a
+       Directory.Build import. SkiaSharp ships these PDBs as native assets, so
+       DebugSymbols/CopyDebugSymbolFilesFromPackages do not control their copy. -->
+  <Target Name="KijiVerificationExcludeNativeSymbols" AfterTargets="ResolveReferences">
+    <ItemGroup>
+      <ReferenceCopyLocalPaths Remove="@(ReferenceCopyLocalPaths)"
+                               Condition="'%(ReferenceCopyLocalPaths.NuGetPackageId)' == 'SkiaSharp.NativeAssets.Win32' and
+                                          '%(ReferenceCopyLocalPaths.Filename)' == 'libSkiaSharp' and
+                                          '%(ReferenceCopyLocalPaths.Extension)' == '.pdb'" />
+    </ItemGroup>
+  </Target>
+</Project>

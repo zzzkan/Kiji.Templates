@@ -14,15 +14,19 @@ app.Info = new SiteInfo
     Description = "Notes on things made, read, and noticed.",
     Language = "en",
 };
-app.UseMarkdownContent<FrontMatter, BlogPost>(BlogPost.Create);
+
+app.UseMarkdownContent<PostFrontMatter, BlogPost>(BlogPost.Create,
+    options => options.Directory = "content/posts");
 app.UseDefaultLayout<MainLayout>();
+
 app.AddPages();
 app.AddPages<Post>(services => services.GetRequiredService<ContentDictionary<BlogPost>>()
     .Select(post => new { Slug = post.Value.Slug, ContentKey = post.Key }));
 app.AddNotFoundPage<NotFound>();
+
 app.AddRssFeed(services => services.GetRequiredService<ContentDictionary<BlogPost>>().Values
     .OrderByDescending(post => post.Date)
     .ThenBy(post => post.Slug, StringComparer.Ordinal)
-    .Select(post => new FeedItem(post.Title, post.Description, post.Date, post.Path)));
+    .Select(post => new FeedItem(post.Title, post.Description, post.Date, post.RelativePath)));
 
 return await app.RunAsync();
