@@ -1,4 +1,5 @@
 using System.Xml.Linq;
+using System.Text.RegularExpressions;
 using Xunit;
 
 namespace Kiji.Templates.Tests;
@@ -9,7 +10,7 @@ public sealed class BlogAuthoringTests(TemplateFixture fixture) : IDisposable
     public void Dispose() => fixture.RecordTestResult();
 
     [Fact]
-    public async Task AddedMarkdownPostsAppearInPagesHomeAndFeed()
+    public async Task MarkdownPostsAndGeneralPagesPublishInTheirOwnCollections()
     {
         var site = await fixture.GenerateSite("blog", subpath: true, scenario: "added-posts");
         var posts = new[]
@@ -31,12 +32,35 @@ public sealed class BlogAuthoringTests(TemplateFixture fixture) : IDisposable
                 This **new post** must be published automatically.
                 """, TestContext.Current.CancellationToken);
         }
-        // Markdown outside the post collection must not require post metadata or be published.
+        var pages = new[]
+        {
+            (File: "reading/index.md", Slug: "reading"),
+            (File: "contact.md", Slug: "contact"),
+        };
+        foreach (var page in pages)
+        {
+            var path = Path.Combine(site.Project, "content", "pages", page.File);
+            Directory.CreateDirectory(Path.GetDirectoryName(path)!);
+            await File.WriteAllTextAsync(path, $$"""
+                ---
+                title: {{page.Slug}}
+                description: A general page without a date.
+                ---
+
+                ## Details
+
+                This **general page** must be published automatically.
+                """, TestContext.Current.CancellationToken);
+        }
+        Assert.False(File.Exists(Path.Combine(site.Project, "content", "pages", "home.md")));
+        // Markdown outside either collection is ignored.
         await File.WriteAllTextAsync(Path.Combine(site.Project, "content", "about.md"),
             "# Not a blog post", TestContext.Current.CancellationToken);
         await fixture.Publish(site);
 
         var home = await File.ReadAllTextAsync(Path.Combine(site.Output, "index.html"), TestContext.Current.CancellationToken);
+        Assert.Contains($"<title>Home - {site.Name}</title>", home);
+        Assert.Contains("A place for small notes</h1>", home);
         var items = XDocument.Load(Path.Combine(site.Output, "feed.xml")).Root!.Element("channel")!.Elements("item").ToArray();
         Assert.Equal(4, items.Length);
         Assert.Equal(posts.Select(post => post.Slug), items.Take(2).Select(item => item.Element("title")!.Value));
@@ -47,19 +71,38 @@ public sealed class BlogAuthoringTests(TemplateFixture fixture) : IDisposable
                 await File.ReadAllTextAsync(Path.Combine(site.Output, "posts", post.Slug, "index.html"), TestContext.Current.CancellationToken));
             Assert.Contains(items, item => item.Element("link")!.Value == $"https://example.com{site.Prefix}posts/{post.Slug}/");
         }
+        foreach (var page in pages)
+        {
+            var html = await File.ReadAllTextAsync(Path.Combine(site.Output, page.Slug, "index.html"), TestContext.Current.CancellationToken);
+            Assert.Single(Regex.Matches(html, "<h1[\\s>]"));
+            Assert.Contains($"<h1>{page.Slug}</h1>", html);
+            Assert.Contains("Details</h2>", html);
+            Assert.Contains("<strong>general page</strong>", html);
+            Assert.Contains($"https://example.com{site.Prefix}{page.Slug}/", html);
+            Assert.DoesNotContain($"href=\"{site.Prefix}{page.Slug}/\"", home);
+            Assert.DoesNotContain(items, item => item.Element("title")!.Value == page.Slug);
+        }
     }
 
-    [Fact]
-    public async Task PostsWithTheSameSlugCannotBePublished()
+    [Theory]
+    [InlineData("posts", "first-note", "posts/first-note/index.html")]
+    [InlineData("pages", "about", "about/index.html")]
+    public async Task ContentWithTheSameSlugCannotBePublished(string collection, string slug, string output)
     {
-        var site = await fixture.GenerateSite("blog", subpath: false, scenario: "duplicate-slug");
-        var posts = Path.Combine(site.Project, "content", "posts");
-        File.Copy(Path.Combine(posts, "first-note", "index.md"), Path.Combine(posts, "first-note.md"));
+        var site = await fixture.GenerateSite("blog", subpath: false, scenario: $"duplicate-{collection}-slug");
+        var content = Path.Combine(site.Project, "content", collection);
+        var bundle = Path.Combine(content, slug, "index.md");
+        var single = Path.Combine(content, $"{slug}.md");
+        Directory.CreateDirectory(Path.GetDirectoryName(bundle)!);
+        if (File.Exists(bundle))
+            File.Copy(bundle, single);
+        else
+            File.Copy(single, bundle);
 
         await Assert.ThrowsAsync<InvalidOperationException>(() => fixture.Publish(site));
 
         var stdout = await File.ReadAllTextAsync(Path.Combine(fixture.Logs, $"{site.Label}-publish.stdout.log"), TestContext.Current.CancellationToken);
         var stderr = await File.ReadAllTextAsync(Path.Combine(fixture.Logs, $"{site.Label}-publish.stderr.log"), TestContext.Current.CancellationToken);
-        Assert.Contains($"duplicate output path '{Path.Combine("posts", "first-note", "index.html")}'", stdout + stderr);
+        Assert.Contains($"duplicate output path '{output.Replace('/', Path.DirectorySeparatorChar)}'", stdout + stderr);
     }
 }

@@ -4,7 +4,7 @@
   "classifications": ["Web", "Static Site"],
   "identity": "Kiji.Blog",
   "name": "Kiji Blog",
-  "description": "A small Markdown blog with dated posts, an About page, and RSS, built with Razor and Kiji.",
+  "description": "A Markdown blog with posts, general pages, Prism syntax highlighting, and RSS, built with Razor and Kiji.",
   "shortName": "kiji-blog",
   "sourceName": "Kiji.Blog",
   "preferNameDirectory": true,

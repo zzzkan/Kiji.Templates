@@ -56,7 +56,9 @@ public abstract class PublishedSiteTest(TemplateFixture fixture) : PageTest
             Page.RequestFailed += (_, request) => errors.Enqueue($"{request.Failure} {request.Url}");
             Page.Request += (_, request) =>
             {
-                if (!request.Url.StartsWith(baseUrl, StringComparison.Ordinal))
+                var isPrism = template == "blog"
+                    && request.Url.StartsWith("https://cdn.jsdelivr.net/npm/prismjs@1.30.0/", StringComparison.Ordinal);
+                if (!request.Url.StartsWith(baseUrl, StringComparison.Ordinal) && !isPrism)
                     errors.Enqueue($"Unexpected external request: {request.Url}");
             };
 

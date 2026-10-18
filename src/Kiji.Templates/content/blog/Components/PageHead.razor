@@ -2,16 +2,26 @@
 @inject PageInfo Page
 
 <StaticHeadContent>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>@Title - @Site.Name</title>
-    <meta name="description" content="@(Description ?? Site.Description)" />
-    <link rel="canonical" href="@Page.Url" />
-    <link rel="stylesheet" href="@Assets["css/app.css"]" />
-    <link rel="alternate" type="application/rss+xml" title="@Site.Name" href="@Site.ResolveUrl("feed.xml").AbsolutePath" />
+    <title>@PageTitle</title>
+    <meta name="description" content="@PageDescription" />
+    <meta name="author" content="@Site.Author" />
+    <link rel="canonical" href="@Page.Url.AbsoluteUri" />
+    <meta property="og:title" content="@PageTitle" />
+    <meta property="og:description" content="@PageDescription" />
+    <meta property="og:url" content="@Page.Url.AbsoluteUri" />
+    <meta property="og:site_name" content="@Site.Name" />
+    <meta property="og:type" content="@(PublishedAt is null ? "website" : "article")" />
+    @if (PublishedAt is { } publishedAt)
+    {
+        <meta property="article:published_time" content="@publishedAt.ToString("O", CultureInfo.InvariantCulture)" />
+    }
 </StaticHeadContent>
 
 @code {
     [Parameter, EditorRequired] public string Title { get; set; } = string.Empty;
     [Parameter] public string? Description { get; set; }
+    [Parameter] public DateTimeOffset? PublishedAt { get; set; }
+
+    private string PageTitle => $"{Title} - {Site.Name}";
+    private string? PageDescription => string.IsNullOrWhiteSpace(Description) ? Site.Description : Description;
 }

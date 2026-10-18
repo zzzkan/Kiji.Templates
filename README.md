@@ -11,11 +11,11 @@ Requires the **.NET 10 SDK**.
 dotnet new install Kiji.Templates
 ```
 
-| Template                              | Short name         | Contents                                                     |
-| ------------------------------------- | ------------------ | ------------------------------------------------------------ |
-| [Kiji Minimal](#kiji-minimal)         | `kiji-minimal`     | A minimal site with a single home page.                      |
-| [Kiji Blog](#kiji-blog)               | `kiji-blog`        | A Markdown blog with RSS and light/dark colors.              |
-| [Kiji Interactive](#kiji-interactive) | `kiji-interactive` | Familiar Blazor template pages with JavaScript interactions. |
+| Template                              | Short name         | Contents                                                                                                  |
+| ------------------------------------- | ------------------ | --------------------------------------------------------------------------------------------------------- |
+| [Kiji Minimal](#kiji-minimal)         | `kiji-minimal`     | A minimal site with a single home page.                                                                   |
+| [Kiji Blog](#kiji-blog)               | `kiji-blog`        | A Markdown blog with posts, general pages, Prism syntax highlighting, and RSS, built with Razor and Kiji. |
+| [Kiji Interactive](#kiji-interactive) | `kiji-interactive` | Familiar Blazor template pages with JavaScript interactions.                                              |
 
 ## Kiji Minimal
 
@@ -31,8 +31,8 @@ dotnet new kiji-minimal -o MySite
 
 ## Kiji Blog
 
-A Markdown blog with dated posts, an About page, RSS,
-and automatic light/dark colors.
+A blog with dated Markdown posts, Markdown About and Policy pages, inline images,
+Prism syntax highlighting via CDN, RSS, and automatic light/dark colors.
 
 ```sh
 dotnet new kiji-blog -o MyBlog

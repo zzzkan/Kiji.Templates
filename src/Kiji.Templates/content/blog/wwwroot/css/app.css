@@ -90,10 +90,18 @@ nav a[aria-current="page"] {
 }
 
 .site-footer {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: .5rem 1.5rem;
     border-top: 1px solid var(--rule);
     margin-top: 4rem;
     padding-top: 1rem;
     color: var(--muted);
+}
+
+.site-footer > a {
+    font-size: .875rem;
 }
 
 .post-list {
@@ -151,12 +159,19 @@ pre {
 
 pre code {
     padding: 0;
+    background: transparent;
 }
 
 img,
 video {
     max-width: 100%;
     height: auto;
+}
+
+.prose img {
+    display: block;
+    margin-block: 1.5rem;
+    border-radius: .3rem;
 }
 
 table {

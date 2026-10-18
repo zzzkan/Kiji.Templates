@@ -25,7 +25,7 @@ public class BlogTests(TemplateFixture fixture) : PublishedSiteTest(fixture)
             - main:
               - /children: deep-equal
               - heading "A place for small notes" [level=1]
-              - paragraph: Notes on things made, read, and noticed.
+              - paragraph: A Markdown blog with RSS and light/dark colors.
               - region "Posts":
                 - heading "Posts" [level=2]
                 - list:
@@ -41,8 +41,15 @@ public class BlogTests(TemplateFixture fixture) : PublishedSiteTest(fixture)
         await File.WriteAllTextAsync(Path.Combine(diagnostics, "home.aria.yml"),
             await Page.GetByRole(AriaRole.Main).AriaSnapshotAsync(), TestContext.Current.CancellationToken);
         await Expect(Page.Locator("link[rel=canonical]")).ToHaveAttributeAsync("href", $"https://example.com{prefix}");
+        await Expect(Page.Locator("meta[property='og:title']")).ToHaveAttributeAsync("content", $"Home - {siteName}");
+        await Expect(Page.Locator("meta[property='og:type']")).ToHaveAttributeAsync("content", "website");
+        await Expect(Page.Locator("meta[property='og:url']")).ToHaveAttributeAsync("content", $"https://example.com{prefix}");
+        await Expect(Page.Locator("meta[name=author]")).ToHaveAttributeAsync("content", "zzzkan");
+        var favicon = await Page.Locator("link[rel=icon]").GetAttributeAsync("href");
+        Assert.StartsWith("data:image/svg+xml,", favicon);
+        Assert.Contains("📓", Uri.UnescapeDataString(favicon!));
+        await Expect(Page.GetByRole(AriaRole.Contentinfo)).ToContainTextAsync($"© {DateTime.UtcNow.Year} zzzkan");
         await Expect(Page.GetByRole(AriaRole.Link, new() { Name = "Home", Exact = true })).ToHaveAttributeAsync("aria-current", "page");
-        await Expect(Page.Locator("script")).ToHaveCountAsync(0);
         await Page.ScreenshotAsync(new() { Path = Path.Combine(diagnostics, "home-desktop.png"), FullPage = true });
         await Page.Keyboard.PressAsync("Tab");
         await Expect(Page.GetByRole(AriaRole.Link, new() { Name = "Skip to content" })).ToBeFocusedAsync();
@@ -54,11 +61,21 @@ public class BlogTests(TemplateFixture fixture) : PublishedSiteTest(fixture)
         await Expect(Page.Locator("time")).ToHaveAttributeAsync("datetime", "2026-01-12");
         await Expect(Page.Locator("meta[name=description]")).ToHaveAttributeAsync("content", "Making a little room for writing.");
         await Expect(Page.Locator("link[rel=canonical]")).ToHaveAttributeAsync("href", $"https://example.com{prefix}posts/first-note/");
+        await Expect(Page.Locator("meta[property='og:type']")).ToHaveAttributeAsync("content", "article");
+        await Expect(Page.Locator("meta[property='og:description']")).ToHaveAttributeAsync("content", "Making a little room for writing.");
+        Assert.Equal(DateTimeOffset.Parse("2026-01-12T09:00:00Z"), DateTimeOffset.Parse(
+            (await Page.Locator("meta[property='article:published_time']").GetAttributeAsync("content"))!));
         // Markdown's document-relative link must preserve the deployment prefix.
         await Page.GetByRole(AriaRole.Link, new() { Name = "keeping a notebook", Exact = true }).ClickAsync();
         await Expect(Page).ToHaveURLAsync($"{baseUrl}posts/keeping-a-notebook/");
         await Expect(Page.GetByRole(AriaRole.Heading, new() { Level = 1 })).ToHaveTextAsync("Keeping a notebook");
-        await Expect(Page.Locator("pre code")).ToContainTextAsync("Notice something.");
+        await Expect(Page.Locator("pre code.language-text")).ToContainTextAsync("Notice something.");
+        await Expect(Page.Locator("pre code.language-csharp")).ToContainTextAsync("Console.WriteLine(note);");
+        var picture = Page.GetByRole(AriaRole.Img, new() { Name = "Three steps for a notebook habit: notice, write, and return." });
+        await Expect(picture).ToBeVisibleAsync();
+        await Expect(picture).ToHaveAttributeAsync("srcset", new System.Text.RegularExpressions.Regex(@"\d+w"));
+        Assert.True(await picture.EvaluateAsync<bool>("image => image.complete && image.naturalWidth > 0"));
+        Assert.StartsWith($"{baseUrl}posts/keeping-a-notebook/", await picture.EvaluateAsync<string>("image => image.currentSrc"));
         await Page.ScreenshotAsync(new() { Path = Path.Combine(diagnostics, "post-desktop.png"), FullPage = true });
 
         await Page.SetViewportSizeAsync(390, 844);
@@ -80,6 +97,17 @@ public class BlogTests(TemplateFixture fixture) : PublishedSiteTest(fixture)
         await Page.GetByRole(AriaRole.Link, new() { Name = "About", Exact = true }).ClickAsync();
         await Expect(Page.GetByRole(AriaRole.Heading, new() { Level = 1 })).ToHaveTextAsync("About");
         await Expect(Page.GetByRole(AriaRole.Link, new() { Name = "About", Exact = true })).ToHaveAttributeAsync("aria-current", "page");
+        await Expect(Page.GetByRole(AriaRole.Main)).ToContainTextAsync("I write to make sense of what I am learning");
+        await Page.GetByRole(AriaRole.Contentinfo).GetByRole(AriaRole.Link, new() { Name = "Site policy", Exact = true }).ClickAsync();
+        await Expect(Page).ToHaveURLAsync($"{baseUrl}policy/");
+        await Expect(Page.GetByRole(AriaRole.Heading, new() { Level = 1 })).ToHaveTextAsync("Site policy");
+        await Expect(Page.Locator(".prose h1")).ToHaveCountAsync(0);
+        await Expect(Page.GetByRole(AriaRole.Heading, new() { Level = 2, Name = "Privacy", Exact = true })).ToBeVisibleAsync();
+        await Expect(Page.Locator("link[rel=canonical]")).ToHaveAttributeAsync("href", $"https://example.com{prefix}policy/");
+        await Expect(Page.Locator("meta[property='og:type']")).ToHaveAttributeAsync("content", "website");
+        await Expect(Page.Locator("meta[property='article:published_time']")).ToHaveCountAsync(0);
+        await Expect(Page.GetByRole(AriaRole.Contentinfo).GetByRole(AriaRole.Link, new() { Name = "Site policy" })).ToHaveAttributeAsync("aria-current", "page");
+        await AssertNoOverflow();
         await Expect(Page.GetByRole(AriaRole.Link, new() { Name = "RSS", Exact = true })).ToHaveAttributeAsync("href", $"{prefix}feed.xml");
         await Expect(Page.Locator("link[rel=alternate]")).ToHaveAttributeAsync("href", $"{prefix}feed.xml");
         using var http = new HttpClient();

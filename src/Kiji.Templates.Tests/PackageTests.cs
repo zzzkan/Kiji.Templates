@@ -33,6 +33,15 @@ public sealed class PackageTests(TemplateFixture fixture) : IDisposable
     }
 
     [Fact]
+    public void BlogDoesNotBundlePrismAssets()
+    {
+        using var archive = ZipFile.OpenRead(TemplateFixture.PackagePath);
+        const string root = "content/blog/wwwroot/";
+        Assert.DoesNotContain(archive.Entries, entry => entry.FullName.StartsWith(root + "lib/prism/", StringComparison.Ordinal));
+        Assert.Null(archive.GetEntry(root + "css/prism.css"));
+    }
+
+    [Fact]
     public void InteractiveIncludesThirdPartyAssetsAndLicenses()
     {
         using var archive = ZipFile.OpenRead(TemplateFixture.PackagePath);

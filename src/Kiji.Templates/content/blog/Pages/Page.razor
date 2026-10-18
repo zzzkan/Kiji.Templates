@@ -1,0 +1,23 @@
+@page "/{Slug}/"
+@inject ContentDictionary<SitePage> SitePages
+
+@if (_page is not null)
+{
+    <PageHead Title="@_page.Title" Description="@_page.Description" />
+    <h1>@_page.Title</h1>
+    <div class="prose">@((MarkupString)_html)</div>
+}
+
+@code {
+    [Parameter] public string Slug { get; set; } = string.Empty;
+    [Parameter] public string ContentKey { get; set; } = string.Empty;
+
+    private SitePage? _page;
+    private string _html = string.Empty;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        _page = SitePages[ContentKey];
+        _html = await _page.Content.RenderAsync();
+    }
+}

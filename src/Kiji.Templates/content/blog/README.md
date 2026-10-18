@@ -1,5 +1,9 @@
 # Kiji.Blog
 
+A Markdown blog with dated posts in `content/posts/` and general pages in
+`content/pages/`. Includes RSS, inline images, Prism syntax highlighting via CDN,
+and automatic light/dark colors.
+
 Run `dotnet watch` to start a local preview at <http://localhost:8080>.
 The site rebuilds when you edit files. Press `Ctrl+C` to stop.
 
