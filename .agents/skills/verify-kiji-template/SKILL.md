@@ -33,6 +33,8 @@ dotnet test --project src/Kiji.Templates.Tests -c Release --no-build --report-xu
 `KIJI_TEST_BROWSER_CHANNEL` selects the Playwright launch channel for browser tests;
 leaving it unset retains Playwright's default Chromium headless shell. Windows CI
 logs the installed Edge version to help diagnose runner/browser updates.
+For Edge, browser tests also pass an explicit context locale as a launch language
+so date formatting does not fall back to the machine's regional settings.
 
 Pack and test with the same configuration. Tests read
 `src/Kiji.Templates/bin/<Configuration>`; override with
