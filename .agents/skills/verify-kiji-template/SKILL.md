@@ -21,6 +21,19 @@ pwsh ./src/Kiji.Templates.Tests/bin/Release/net10.0/playwright.ps1 install --wit
 dotnet test --project src/Kiji.Templates.Tests -c Release --no-build --report-xunit-trx
 ```
 
+Windows CI uses the runner's preinstalled Microsoft Edge instead of installing
+Chromium or Media Foundation; Linux CI uses the Chromium command above unchanged.
+To reproduce Windows CI on a machine with Edge installed, skip the browser install
+and run:
+
+```pwsh
+dotnet test --project src/Kiji.Templates.Tests -c Release --no-build --report-xunit-trx --environment KIJI_TEST_BROWSER_CHANNEL=msedge
+```
+
+`KIJI_TEST_BROWSER_CHANNEL` selects the Playwright launch channel for browser tests;
+leaving it unset retains Playwright's default Chromium headless shell. Windows CI
+logs the installed Edge version to help diagnose runner/browser updates.
+
 Pack and test with the same configuration. Tests read
 `src/Kiji.Templates/bin/<Configuration>`; override with
 `--environment "KIJI_TEMPLATE_PACKAGE=<nupkg-or-directory>"` on `dotnet test`.

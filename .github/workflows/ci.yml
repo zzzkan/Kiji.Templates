@@ -36,8 +36,14 @@ jobs:
       - name: Build tests
         run: dotnet build src/Kiji.Templates.Tests -c Release
       - name: Install Chromium
+        if: runner.os == 'Linux'
         run: pwsh ./src/Kiji.Templates.Tests/bin/Release/net10.0/playwright.ps1 install --with-deps --only-shell chromium
+      - name: Report preinstalled Edge version
+        if: runner.os == 'Windows'
+        run: (Get-Item "${env:ProgramFiles(x86)}/Microsoft/Edge/Application/msedge.exe").VersionInfo.ProductVersion
       - name: Verify package and generated sites
+        env:
+          KIJI_TEST_BROWSER_CHANNEL: ${{ runner.os == 'Windows' && 'msedge' || '' }}
         run: >-
           dotnet test --project src/Kiji.Templates.Tests -c Release --no-build
           --report-xunit-trx

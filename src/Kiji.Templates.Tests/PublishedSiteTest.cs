@@ -13,6 +13,14 @@ namespace Kiji.Templates.Tests;
 [Collection("Templates")]
 public abstract class PublishedSiteTest(TemplateFixture fixture) : PageTest
 {
+    public override Task<BrowserTypeLaunchOptions?> LaunchOptionsAsync()
+    {
+        var channel = Environment.GetEnvironmentVariable("KIJI_TEST_BROWSER_CHANNEL");
+        return string.IsNullOrEmpty(channel)
+            ? base.LaunchOptionsAsync()
+            : Task.FromResult<BrowserTypeLaunchOptions?>(new() { Channel = channel });
+    }
+
     public override async ValueTask DisposeAsync()
     {
         var cleanupSucceeded = false;
