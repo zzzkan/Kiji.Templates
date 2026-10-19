@@ -2,10 +2,7 @@
 
 [![NuGet](https://img.shields.io/nuget/v/Kiji.Templates.svg)](https://www.nuget.org/packages/Kiji.Templates)
 
-Static website templates built with Razor and [Kiji](https://github.com/zzzkan/kiji).
-See the [Kiji documentation](https://kiji-docs.zzzkan.workers.dev/docs/getting-started/) for more.
-
-Requires the **.NET 10 SDK**.
+Static website templates built with [Kiji](https://github.com/zzzkan/kiji).
 
 ```pwsh
 dotnet new install Kiji.Templates
