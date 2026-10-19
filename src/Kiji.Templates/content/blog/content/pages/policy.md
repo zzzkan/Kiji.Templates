@@ -1,5 +1,5 @@
 ---
-title: Site policy
+title: Policy
 description: Privacy, links, and reuse of the writing on this site.
 ---
 

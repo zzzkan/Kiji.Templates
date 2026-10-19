@@ -37,7 +37,7 @@ try {
             $reader = [IO.StreamReader]::new($entry.Open())
             try {
                 $definition = $reader.ReadToEnd() | ConvertFrom-Json
-                [pscustomobject]@{ Kind = $kind; ShortName = $definition.shortName }
+                [pscustomobject]@{ Kind = $kind; ShortName = $definition.shortName; SourceName = $definition.sourceName }
             }
             finally { $reader.Dispose() }
         }
@@ -66,7 +66,7 @@ function Invoke-Dotnet([string] $Label, [string[]] $CommandArguments) {
 Invoke-Dotnet 'install' @('new', 'install', $package)
 $links = foreach ($template in ($templates | Sort-Object Kind)) {
     $project = Join-Path $work $template.Kind
-    Invoke-Dotnet "$($template.Kind)-new" @('new', $template.ShortName, '-o', $project, '--no-restore')
+    Invoke-Dotnet "$($template.Kind)-new" @('new', $template.ShortName, '--name', $template.SourceName, '-o', $project, '--no-restore')
     $programPath = Join-Path $project 'Program.cs'
     $program = [IO.File]::ReadAllText($programPath)
     $placeholder = 'BaseUrl = new Uri("https://example.com/")'

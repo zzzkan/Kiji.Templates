@@ -25,7 +25,7 @@
     <nav aria-label="Main navigation">
         <a href="@Site.ResolveUrl("").AbsolutePath" aria-current="@Current("")">Home</a>
         <a href="@Site.ResolveUrl("about/").AbsolutePath" aria-current="@Current("about/")">About</a>
-        <a href="@Site.ResolveUrl("feed.xml").AbsolutePath">RSS</a>
+        <a href="@Site.ResolveUrl("policy/").AbsolutePath" aria-current="@Current("policy/")">Policy</a>
     </nav>
 </header>
 <main id="content" tabindex="-1">
@@ -34,7 +34,6 @@
 <footer class="site-footer">
     <small>&copy; @DateTime.UtcNow.Year @(Site.Author), Built with <a
         href="https://github.com/zzzkan/kiji">Kiji</a>.</small>
-    <a href="@Site.ResolveUrl("policy/").AbsolutePath" aria-current="@Current("policy/")">Site policy</a>
 </footer>
 
 @code {

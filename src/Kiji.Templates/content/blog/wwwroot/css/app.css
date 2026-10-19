@@ -90,18 +90,11 @@ nav a[aria-current="page"] {
 }
 
 .site-footer {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: baseline;
-    gap: .5rem 1.5rem;
+    text-align: center;
     border-top: 1px solid var(--rule);
     margin-top: 4rem;
     padding-top: 1rem;
     color: var(--muted);
-}
-
-.site-footer > a {
-    font-size: .875rem;
 }
 
 .post-list {
@@ -130,10 +123,6 @@ time {
     margin-bottom: .5rem;
 }
 
-.back-link {
-    margin-top: 3rem;
-}
-
 blockquote {
     margin: 1.5rem 0;
     padding-left: 1.25rem;
@@ -148,16 +137,18 @@ code {
     border-radius: .2rem;
 }
 
-pre {
+.prose pre {
     max-width: 100%;
     overflow-x: auto;
     padding: 1rem;
     background: var(--code);
     border-radius: .3rem;
+    font-size: .9em;
     line-height: 1.5;
 }
 
-pre code {
+.prose pre code {
+    font-size: inherit;
     padding: 0;
     background: transparent;
 }

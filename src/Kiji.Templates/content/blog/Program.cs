@@ -4,6 +4,7 @@ using Kiji.Blog.Models;
 using Kiji.Blog.Pages;
 using Kiji.Feeds;
 using Kiji.Markdown;
+using Kiji.Sitemaps;
 using Microsoft.Extensions.DependencyInjection;
 
 var app = StaticSite.Create(args);
@@ -28,6 +29,7 @@ app.AddPages<Post>(services => services.GetRequiredService<ContentDictionary<Blo
 app.AddPages<Page>(services => services.GetRequiredService<ContentDictionary<SitePage>>()
     .Select(page => new { Slug = page.Value.Slug, ContentKey = page.Key }));
 app.AddNotFoundPage<NotFound>();
+app.AddSitemap();
 
 app.AddRssFeed(services => services.GetRequiredService<ContentDictionary<BlogPost>>().Values
     .OrderByDescending(post => post.Date)

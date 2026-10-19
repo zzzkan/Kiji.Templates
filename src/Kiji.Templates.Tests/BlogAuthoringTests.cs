@@ -64,12 +64,17 @@ public sealed class BlogAuthoringTests(TemplateFixture fixture) : IDisposable
         var items = XDocument.Load(Path.Combine(site.Output, "feed.xml")).Root!.Element("channel")!.Elements("item").ToArray();
         Assert.Equal(4, items.Length);
         Assert.Equal(posts.Select(post => post.Slug), items.Take(2).Select(item => item.Element("title")!.Value));
+        XNamespace sitemapNamespace = "http://www.sitemaps.org/schemas/sitemap/0.9";
+        var sitemapUrls = XDocument.Load(Path.Combine(site.Output, "sitemap.xml"))
+            .Descendants(sitemapNamespace + "loc").Select(location => location.Value).ToArray();
+        Assert.Equal(9, sitemapUrls.Length);
         foreach (var post in posts)
         {
             Assert.Contains($"href=\"{site.Prefix}posts/{post.Slug}/\"", home);
             Assert.Contains("<strong>new post</strong>",
                 await File.ReadAllTextAsync(Path.Combine(site.Output, "posts", post.Slug, "index.html"), TestContext.Current.CancellationToken));
             Assert.Contains(items, item => item.Element("link")!.Value == $"https://example.com{site.Prefix}posts/{post.Slug}/");
+            Assert.Contains($"https://example.com{site.Prefix}posts/{post.Slug}/", sitemapUrls);
         }
         foreach (var page in pages)
         {
@@ -81,6 +86,7 @@ public sealed class BlogAuthoringTests(TemplateFixture fixture) : IDisposable
             Assert.Contains($"https://example.com{site.Prefix}{page.Slug}/", html);
             Assert.DoesNotContain($"href=\"{site.Prefix}{page.Slug}/\"", home);
             Assert.DoesNotContain(items, item => item.Element("title")!.Value == page.Slug);
+            Assert.Contains($"https://example.com{site.Prefix}{page.Slug}/", sitemapUrls);
         }
     }
 

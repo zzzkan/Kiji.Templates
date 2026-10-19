@@ -87,7 +87,7 @@ public class BlogTests(TemplateFixture fixture) : PublishedSiteTest(fixture)
         var darkBackground = await Page.Locator("html").EvaluateAsync<string>("element => getComputedStyle(element).backgroundColor");
         Assert.NotEqual(lightBackground, darkBackground);
         await Page.ScreenshotAsync(new() { Path = Path.Combine(diagnostics, "post-dark.png"), FullPage = true });
-        await Page.GetByRole(AriaRole.Link, new() { Name = "All posts", Exact = true }).ClickAsync();
+        await Page.GetByRole(AriaRole.Navigation).GetByRole(AriaRole.Link, new() { Name = "Home", Exact = true }).ClickAsync();
         await Expect(Page).ToHaveURLAsync(baseUrl);
         await Page.EmulateMediaAsync(new() { ColorScheme = ColorScheme.Light });
         await Page.ScreenshotAsync(new() { Path = Path.Combine(diagnostics, "home-mobile.png"), FullPage = true });
@@ -98,17 +98,17 @@ public class BlogTests(TemplateFixture fixture) : PublishedSiteTest(fixture)
         await Expect(Page.GetByRole(AriaRole.Heading, new() { Level = 1 })).ToHaveTextAsync("About");
         await Expect(Page.GetByRole(AriaRole.Link, new() { Name = "About", Exact = true })).ToHaveAttributeAsync("aria-current", "page");
         await Expect(Page.GetByRole(AriaRole.Main)).ToContainTextAsync("I write to make sense of what I am learning");
-        await Page.GetByRole(AriaRole.Contentinfo).GetByRole(AriaRole.Link, new() { Name = "Site policy", Exact = true }).ClickAsync();
+        await Page.GetByRole(AriaRole.Navigation).GetByRole(AriaRole.Link, new() { Name = "Policy", Exact = true }).ClickAsync();
         await Expect(Page).ToHaveURLAsync($"{baseUrl}policy/");
-        await Expect(Page.GetByRole(AriaRole.Heading, new() { Level = 1 })).ToHaveTextAsync("Site policy");
+        await Expect(Page.GetByRole(AriaRole.Heading, new() { Level = 1 })).ToHaveTextAsync("Policy");
         await Expect(Page.Locator(".prose h1")).ToHaveCountAsync(0);
         await Expect(Page.GetByRole(AriaRole.Heading, new() { Level = 2, Name = "Privacy", Exact = true })).ToBeVisibleAsync();
         await Expect(Page.Locator("link[rel=canonical]")).ToHaveAttributeAsync("href", $"https://example.com{prefix}policy/");
         await Expect(Page.Locator("meta[property='og:type']")).ToHaveAttributeAsync("content", "website");
         await Expect(Page.Locator("meta[property='article:published_time']")).ToHaveCountAsync(0);
-        await Expect(Page.GetByRole(AriaRole.Contentinfo).GetByRole(AriaRole.Link, new() { Name = "Site policy" })).ToHaveAttributeAsync("aria-current", "page");
+        await Expect(Page.GetByRole(AriaRole.Navigation).GetByRole(AriaRole.Link, new() { Name = "Policy" })).ToHaveAttributeAsync("aria-current", "page");
         await AssertNoOverflow();
-        await Expect(Page.GetByRole(AriaRole.Link, new() { Name = "RSS", Exact = true })).ToHaveAttributeAsync("href", $"{prefix}feed.xml");
+        await Expect(Page.Locator("a[href$='feed.xml'], a[href$='sitemap.xml']")).ToHaveCountAsync(0);
         await Expect(Page.Locator("link[rel=alternate]")).ToHaveAttributeAsync("href", $"{prefix}feed.xml");
         using var http = new HttpClient();
         var feed = XDocument.Parse(await http.GetStringAsync($"{baseUrl}feed.xml", TestContext.Current.CancellationToken));
@@ -116,6 +116,13 @@ public class BlogTests(TemplateFixture fixture) : PublishedSiteTest(fixture)
         Assert.Equal(siteName, channel.Element("title")!.Value);
         Assert.Equal(["Keeping a notebook", "A first note"], channel.Elements("item").Select(item => item.Element("title")!.Value));
         Assert.Equal($"https://example.com{prefix}posts/keeping-a-notebook/", channel.Elements("item").First().Element("link")!.Value);
+
+        var sitemap = XDocument.Parse(await http.GetStringAsync($"{baseUrl}sitemap.xml", TestContext.Current.CancellationToken));
+        XNamespace sitemapNamespace = "http://www.sitemaps.org/schemas/sitemap/0.9";
+        Assert.Equal(sitemapNamespace + "urlset", sitemap.Root!.Name);
+        Assert.Equal(new[] { "", "about/", "policy/", "posts/first-note/", "posts/keeping-a-notebook/" }
+            .Select(path => $"https://example.com{prefix}{path}"),
+            sitemap.Root.Elements(sitemapNamespace + "url").Select(url => url.Element(sitemapNamespace + "loc")!.Value));
 
         await Page.GotoAsync($"{baseUrl}404.html");
         await Expect(Page.GetByRole(AriaRole.Heading, new() { Level = 1 })).ToHaveTextAsync("Page not found");

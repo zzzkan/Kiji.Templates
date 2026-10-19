@@ -8,4 +8,4 @@ or something spotted on a walk.
 
 I write to make sense of what I am learning, one small note at a time.
 
-Read the [latest posts](../) or the [site policy](../policy/).
+Read the [latest posts](../) or see the [Policy](../policy/).
