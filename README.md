@@ -7,7 +7,7 @@ See the [Kiji documentation](https://kiji-docs.zzzkan.workers.dev/docs/getting-s
 
 Requires the **.NET 10 SDK**.
 
-```sh
+```pwsh
 dotnet new install Kiji.Templates
 ```
 
@@ -21,8 +21,17 @@ dotnet new install Kiji.Templates
 
 A minimal site with a single home page, ready to customize.
 
-```sh
-dotnet new kiji-minimal -o MySite --base-url https://example.org/ --site-name "My Site" --site-description "My personal site." --site-language en --site-author "Your Name"
+<img width="688" height="262" alt="image" src="https://github.com/user-attachments/assets/f8b5bfe5-b1a6-4f2f-a45d-eab6e7e057e8" />
+
+[Demo](https://zzzkan.github.io/Kiji.Templates/kiji-minimal/)
+
+```pwsh
+dotnet new kiji-minimal -o MySite `
+  --base-url https://example.org/`
+  --site-name "My Site"`
+  --site-description "My personal site."`
+  --site-language en`
+  --site-author "Your Name"
 ```
 
 | Parameter | Description | Default |
@@ -33,17 +42,22 @@ dotnet new kiji-minimal -o MySite --base-url https://example.org/ --site-name "M
 | `--site-language` | Language tag, such as `en` or `ja`. | `en` |
 | `--site-author` | Site author. | `zzzkan` |
 
-[Demo](https://zzzkan.github.io/Kiji.Templates/kiji-minimal/)
-
-<!-- Add a screenshot of the Kiji Minimal demo here. -->
-
 ## Kiji Blog
 
 A blog with dated Markdown posts, Markdown About and Policy pages, inline images,
 Prism syntax highlighting via CDN, RSS, and automatic light/dark colors.
 
-```sh
-dotnet new kiji-blog -o MyBlog --base-url https://example.org/blog/ --site-name "My Blog" --site-description "Notes from my days." --site-language en --site-author "Your Name"
+<img width="764" height="704" alt="image" src="https://github.com/user-attachments/assets/def369e4-44b3-428f-bcbc-57eef70d684e" />
+
+[Demo](https://zzzkan.github.io/Kiji.Templates/kiji-blog/)
+
+```pwsh
+dotnet new kiji-blog -o MyBlog`
+  --base-url https://example.org/blog/`
+  --site-name "My Blog"`
+  --site-description "Notes from my days."`
+  --site-language en`
+  --site-author "Your Name"
 ```
 
 | Parameter | Description | Default |
@@ -54,17 +68,22 @@ dotnet new kiji-blog -o MyBlog --base-url https://example.org/blog/ --site-name 
 | `--site-language` | Language tag, such as `en` or `ja`. | `en` |
 | `--site-author` | Site author. | `zzzkan` |
 
-[Demo](https://zzzkan.github.io/Kiji.Templates/kiji-blog/)
-
-<!-- Add a screenshot of the Kiji Blog demo here. -->
-
 ## Kiji Interactive
 
 A sample site inspired by the Blazor WebAssembly template,
 with Home, Counter, and Weather pages and JavaScript interactions.
 
-```sh
-dotnet new kiji-interactive -o MySite --base-url https://example.org/ --site-name "My Site" --site-description "My interactive site." --site-language en --site-author "Your Name"
+<img width="875" height="424" alt="image" src="https://github.com/user-attachments/assets/5f8cced7-c245-44a4-aced-e2d72309861c" />
+
+[Demo](https://zzzkan.github.io/Kiji.Templates/kiji-interactive/)
+
+```pwsh
+dotnet new kiji-interactive -o MySite`
+  --base-url https://example.org/`
+  --site-name "My Site"`
+  --site-description "My interactive site."`
+  --site-language en`
+  --site-author "Your Name"
 ```
 
 | Parameter | Description | Default |
@@ -74,7 +93,3 @@ dotnet new kiji-interactive -o MySite --base-url https://example.org/ --site-nam
 | `--site-description` | Site description. | `Familiar Blazor template pages with JavaScript interactions.` |
 | `--site-language` | Language tag, such as `en` or `ja`. | `en` |
 | `--site-author` | Site author. | `zzzkan` |
-
-[Demo](https://zzzkan.github.io/Kiji.Templates/kiji-interactive/)
-
-<!-- Add a screenshot of the Kiji Interactive demo here. -->
