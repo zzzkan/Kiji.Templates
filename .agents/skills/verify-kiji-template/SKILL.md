@@ -21,6 +21,19 @@ pwsh ./src/Kiji.Templates.Tests/bin/Release/net10.0/playwright.ps1 install --wit
 dotnet test --project src/Kiji.Templates.Tests -c Release --no-build --report-xunit-trx
 ```
 
+CI runs only on Linux using the Chromium command above. To run browser tests
+locally on a machine with Microsoft Edge installed, skip the browser install
+and run:
+
+```pwsh
+dotnet test --project src/Kiji.Templates.Tests -c Release --no-build --report-xunit-trx --environment KIJI_TEST_BROWSER_CHANNEL=msedge
+```
+
+`KIJI_TEST_BROWSER_CHANNEL` selects the Playwright launch channel for browser tests;
+leaving it unset retains Playwright's default Chromium headless shell.
+For Edge, browser tests also pass an explicit context locale as a launch language
+so date formatting does not fall back to the machine's regional settings.
+
 Pack and test with the same configuration. Tests read
 `src/Kiji.Templates/bin/<Configuration>`; override with
 `--environment "KIJI_TEMPLATE_PACKAGE=<nupkg-or-directory>"` on `dotnet test`.
@@ -73,5 +86,5 @@ The builder stops on command failure; only Pages enforces a 15-minute timeout.
 
 [Release](../../../.github/workflows/release.yml) gates packing on successful main
 push CI for the tagged commit, then packs once and uses NuGet trusted publishing
-without repeating Windows/Linux tests. If blocked, rerun after that CI succeeds.
+without repeating Linux tests. If blocked, rerun after that CI succeeds.
 Pages deploys independently.

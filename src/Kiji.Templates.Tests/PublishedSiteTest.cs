@@ -13,6 +13,19 @@ namespace Kiji.Templates.Tests;
 [Collection("Templates")]
 public abstract class PublishedSiteTest(TemplateFixture fixture) : PageTest
 {
+    public override Task<BrowserTypeLaunchOptions?> LaunchOptionsAsync()
+    {
+        var channel = Environment.GetEnvironmentVariable("KIJI_TEST_BROWSER_CHANNEL");
+        if (string.IsNullOrEmpty(channel))
+            return base.LaunchOptionsAsync();
+
+        var options = new BrowserTypeLaunchOptions { Channel = channel };
+        // Edge can retain the OS locale for Intl despite the context's Locale.
+        if (channel == "msedge" && ContextOptions().Locale is { } locale)
+            options.Args = [$"--lang={locale}"];
+        return Task.FromResult<BrowserTypeLaunchOptions?>(options);
+    }
+
     public override async ValueTask DisposeAsync()
     {
         var cleanupSucceeded = false;

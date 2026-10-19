@@ -29,7 +29,7 @@ and failure triage.
   publishing, and browser behavior. Extend only the relevant behavior checks when
   adding template features; generated-file snapshots are not used.
 - `release.yml` requires a successful main push CI run for the tagged commit,
-  then packs once and publishes through NuGet trusted publishing. Windows/Linux
+  then packs once and publishes through NuGet trusted publishing. Linux
   tests run in CI and are not repeated during release.
 - Stop every preview process started by verification, including on failure.
 - Keep README.md and generated READMEs limited to template usage. Keep verification
