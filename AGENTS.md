@@ -1,7 +1,6 @@
 # Kiji.Templates
 
 This repository owns the `Kiji.Templates` NuGet package and its `dotnet new` templates.
-The Kiji library and user documentation live in https://github.com/zzzkan/kiji.
 
 Use [verify-kiji-template](.agents/skills/verify-kiji-template/SKILL.md) for verification
 and failure triage.

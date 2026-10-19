@@ -5,10 +5,6 @@ description: Verify Kiji.Templates changes or an existing NuGet package, and dia
 
 # Verify Kiji.Templates
 
-Run from the repository root with the SDK in `global.json` and standard caches
-and build-server defaults. No shell-wide environment overrides or extra tools
-are needed.
-
 ## Verification
 
 After template or packaging changes, run these [CI](../../../.github/workflows/ci.yml)
@@ -68,13 +64,6 @@ The builder stops on command failure; only Pages enforces a 15-minute timeout.
 
 ## Diagnostics and targeted checks
 
-- Read failed-command output in the terminal or workflow log before changing code.
-  Test command failures include captured stdout/stderr in the exception. Test diagnostics
-  (including ARIA and screenshots) are in `TestResults/tests-<id>/logs/`; CI uploads
-  them on failure. TRX defaults to `TestResults/`; `--results-directory` moves only reports.
-- Successful runs remove generated projects' `bin/` and `obj/`, retaining source,
-  `dist/`, and diagnostics; failed/cancelled runs retain build output. Test classes
-  using `TemplateFixture` must record results during teardown after browser cleanup.
 - Review inline ARIA expectations in `InteractiveTests.cs` and `BlogTests.cs`
   deliberately. For layout changes, inspect desktop/mobile screenshots, including
   Blog home, post, and dark post views; ARIA does not check styling.
