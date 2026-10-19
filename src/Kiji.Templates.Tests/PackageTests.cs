@@ -17,7 +17,7 @@ public sealed class PackageTests(TemplateFixture fixture) : IDisposable
         var sourceKinds = Directory.EnumerateDirectories(Path.Combine(TemplateFixture.Repository, "src", "Kiji.Templates", "content"))
             .Where(directory => File.Exists(Path.Combine(directory, ".template.config", "template.json")))
             .Select(Path.GetFileName).Order(StringComparer.Ordinal);
-        Assert.Equal(sourceKinds, TemplateFixture.Templates.Select(template => template.Kind));
+        Assert.Equal(sourceKinds, TemplateFixture.Templates.Select(template => template.SourceName));
 
         using var archive = ZipFile.OpenRead(TemplateFixture.PackagePath);
         Assert.DoesNotContain(archive.Entries, entry => entry.FullName.StartsWith("content/", StringComparison.Ordinal)
@@ -29,6 +29,7 @@ public sealed class PackageTests(TemplateFixture fixture) : IDisposable
             Assert.Equal($"kiji-{template.Kind}", template.ShortName);
             Assert.Equal(template.Identity, template.SourceName);
             Assert.StartsWith("Kiji.", template.Identity);
+            Assert.NotNull(archive.GetEntry($"content/{template.SourceName}/{template.SourceName}.csproj"));
         }
     }
 
@@ -36,7 +37,7 @@ public sealed class PackageTests(TemplateFixture fixture) : IDisposable
     public void BlogDoesNotBundlePrismAssets()
     {
         using var archive = ZipFile.OpenRead(TemplateFixture.PackagePath);
-        const string root = "content/blog/wwwroot/";
+        const string root = "content/Kiji.Blog/wwwroot/";
         Assert.DoesNotContain(archive.Entries, entry => entry.FullName.StartsWith(root + "lib/prism/", StringComparison.Ordinal));
         Assert.Null(archive.GetEntry(root + "css/prism.css"));
     }
@@ -45,7 +46,7 @@ public sealed class PackageTests(TemplateFixture fixture) : IDisposable
     public void InteractiveIncludesThirdPartyAssetsAndLicenses()
     {
         using var archive = ZipFile.OpenRead(TemplateFixture.PackagePath);
-        const string root = "content/interactive/wwwroot/";
+        const string root = "content/Kiji.Interactive/wwwroot/";
         Assert.NotNull(archive.GetEntry(root + "lib/bootstrap/dist/css/bootstrap.min.css"));
         Assert.NotNull(archive.GetEntry(root + "lib/bootstrap/dist/css/bootstrap.min.css.map"));
         using var bootstrap = new StreamReader(Assert.IsType<ZipArchiveEntry>(archive.GetEntry(root + "lib/bootstrap/LICENSE.txt")).Open());

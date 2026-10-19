@@ -57,17 +57,19 @@ installation and generation after SDK upgrades.
 Build with the script shared by [Pages](../../../.github/workflows/pages.yml):
 
 ```pwsh
-pwsh ./.github/scripts/build-demos.ps1 -PackagePath src/Kiji.Templates/bin/Release -BaseUrl 'https://zzzkan.github.io/Kiji.Templates/' -WorkDirectory obj/demos -OutputDirectory dist
+pwsh ./.github/scripts/build-demos.ps1 -PackagePath src/Kiji.Templates/bin/Release -BaseUrl 'https://zzzkan.github.io/Kiji.Templates' -WorkDirectory artifacts/demos -OutputDirectory dist
 ```
 
 Use fresh work/output directories and set `-PackagePath` to the existing artifact
-when verifying one. Relative paths resolve from the repository root. Inspect links
-and assets at every demo path. Logs and binlogs are in `obj/demos/logs/`.
+when verifying one. Run from the repository root; relative paths resolve from the
+current directory. Pass `-BaseUrl` without a trailing slash. Each demo uses its
+template's short name as the directory, such as `kiji-minimal/`.
 The builder stops on command failure; only Pages enforces a 15-minute timeout.
 
 ## Diagnostics and targeted checks
 
-- Read failed-command stdout/stderr and binlogs before changing code. Test diagnostics
+- Read failed-command output in the terminal or workflow log before changing code.
+  Test command failures include captured stdout/stderr in the exception. Test diagnostics
   (including ARIA and screenshots) are in `TestResults/tests-<id>/logs/`; CI uploads
   them on failure. TRX defaults to `TestResults/`; `--results-directory` moves only reports.
 - Successful runs remove generated projects' `bin/` and `obj/`, retaining source,

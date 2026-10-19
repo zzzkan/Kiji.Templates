@@ -2,6 +2,7 @@ using System.IO.Compression;
 using System.Reflection;
 using System.Text.Json;
 using CliWrap;
+using CliWrap.Buffered;
 using Xunit;
 
 namespace Kiji.Templates.Tests;
@@ -24,7 +25,7 @@ public sealed class TemplateFixture : IAsyncLifetime
 
     public TemplateFixture() => Logs = Directory.CreateDirectory(Path.Combine(RunDirectory, "logs")).FullName;
 
-    public async ValueTask InitializeAsync() => await RunDotnet("install", "new", "install", PackagePath);
+    public async ValueTask InitializeAsync() => await RunDotnet("new", "install", PackagePath);
 
     public ValueTask DisposeAsync()
     {
@@ -49,10 +50,9 @@ public sealed class TemplateFixture : IAsyncLifetime
     internal void RecordTestResult(bool cleanupSucceeded = true) =>
         preserveBuildOutput |= !cleanupSucceeded || TestContext.Current.TestState?.Result != TestResult.Passed;
 
-    internal Task ValidatePackage() => RunDotnet("validate",
+    internal Task ValidatePackage() => RunDotnet(
         "msbuild", Path.Combine(Repository, "src", "Kiji.Templates", "Kiji.Templates.csproj"), "-restore",
-        "-target:ValidateTemplatesAfterBuild", $"-property:ValidateTemplatesPath={PackagePath}",
-        $"-bl:{Path.Combine(Logs, "validate.binlog")}");
+        "-target:ValidateTemplatesAfterBuild", $"-property:ValidateTemplatesPath={PackagePath}");
 
     internal Task<PublishedSite> GetSite(string kind, bool subpath)
     {
@@ -70,7 +70,8 @@ public sealed class TemplateFixture : IAsyncLifetime
         return site;
     }
 
-    internal async Task<PublishedSite> GenerateSite(string kind, bool subpath, string? scenario = null)
+    internal async Task<PublishedSite> GenerateSite(string kind, bool subpath, string? scenario = null,
+        IReadOnlyDictionary<string, string>? siteInfo = null)
     {
         var template = Templates.Single(template => template.Kind == kind);
         var name = subpath ? "Travel.Journal" : "MySite";
@@ -80,15 +81,18 @@ public sealed class TemplateFixture : IAsyncLifetime
         var prefix = subpath ? $"/Kiji.Templates/{kind}/" : "/";
         // Keep one ordinary publish as a smoke test of the user's default path.
         var optimizeBuild = kind != "minimal" || subpath || scenario is not null;
-        var site = new PublishedSite(project, Path.Combine(project, "dist"), prefix, name, $"{kind}-{caseName}", optimizeBuild);
-        string[] options = subpath ? ["--name", name, "--no-restore"] : [];
-        await RunDotnet($"{site.Label}-new",
-            ["new", template.ShortName, "--output", project, .. options]);
+        var site = new PublishedSite(project, Path.Combine(project, "dist"), prefix, name, optimizeBuild);
+        string[] options = subpath
+            ? ["--name", name, "--base-url", $"https://example.com{prefix}", "--no-restore"] : [];
+        await RunDotnet(
+            ["new", template.ShortName, "--output", project, .. options,
+                .. siteInfo?.SelectMany(pair => new[] { pair.Key, pair.Value }) ?? []]);
 
         Assert.True(File.Exists(Path.Combine(project, $"{name}.csproj")), $"Missing {name}.csproj");
         var programPath = Path.Combine(project, "Program.cs");
         var program = await File.ReadAllTextAsync(programPath);
-        Assert.Contains($"Name = \"{name}\"", program);
+        if (siteInfo is null)
+            Assert.Contains($"Name = \"{template.DefaultSiteName}\"", program);
         Assert.Equal($"# {name}", File.ReadLines(Path.Combine(project, "README.md")).First());
         Assert.Equal(!subpath, File.Exists(Path.Combine(project, "obj", "project.assets.json")));
         foreach (var file in Directory.EnumerateFiles(project, "*", SearchOption.AllDirectories)
@@ -97,14 +101,14 @@ public sealed class TemplateFixture : IAsyncLifetime
         {
             Assert.DoesNotContain(template.SourceName, Path.GetRelativePath(project, file));
             if (Path.GetExtension(file) is ".csproj" or ".cs" or ".razor" or ".md")
-                Assert.DoesNotContain(template.SourceName, await File.ReadAllTextAsync(file));
+            {
+                var content = await File.ReadAllTextAsync(file);
+                Assert.DoesNotContain(template.SourceName, content);
+                Assert.DoesNotContain("__KIJI_", content);
+            }
         }
 
-        if (subpath)
-        {
-            Assert.Contains("https://example.com/", program);
-            await File.WriteAllTextAsync(programPath, program.Replace("https://example.com/", $"https://example.com{prefix}"));
-        }
+        Assert.Contains($"BaseUrl = new Uri(\"https://example.com{prefix}\")", program);
         return site;
     }
 
@@ -118,11 +122,9 @@ public sealed class TemplateFixture : IAsyncLifetime
         // dotnet new's automatic restore has no RID. Prepare the same RID that
         // publish will use before exercising --no-restore, without editing the project.
         if (noRestore && site.OptimizeBuild)
-            await RunDotnet($"{site.Label}-restore", ["restore", projectFile, .. buildOptions]);
+            await RunDotnet(["restore", projectFile, .. buildOptions]);
         string[] options = noRestore ? ["--no-restore"] : [];
-        await RunDotnet($"{site.Label}-publish",
-            ["publish", projectFile, "-c", "Release", "-o", site.Output,
-                $"-bl:{Path.Combine(Logs, site.Label)}.binlog", .. buildOptions, .. options]);
+        await RunDotnet(["publish", projectFile, "-c", "Release", "-o", site.Output, .. buildOptions, .. options]);
         Assert.False(string.IsNullOrWhiteSpace(await File.ReadAllTextAsync(Path.Combine(site.Output, "index.html"))));
         if (site.OptimizeBuild)
         {
@@ -133,7 +135,7 @@ public sealed class TemplateFixture : IAsyncLifetime
         }
     }
 
-    private async Task RunDotnet(string label, params string[] arguments)
+    private async Task RunDotnet(params string[] arguments)
     {
         using var timeout = CancellationTokenSource.CreateLinkedTokenSource(TestContext.Current.CancellationToken);
         timeout.CancelAfter(TimeSpan.FromMinutes(5));
@@ -143,16 +145,13 @@ public sealed class TemplateFixture : IAsyncLifetime
         var command = Cli.Wrap("dotnet")
             .WithArguments(arguments)
             .WithWorkingDirectory(Repository)
-            .WithStandardOutputPipe(PipeTarget.ToFile(Path.Combine(Logs, $"{label}.stdout.log")))
-            .WithStandardErrorPipe(PipeTarget.ToFile(Path.Combine(Logs, $"{label}.stderr.log")));
-        try
-        {
-            await command.ExecuteAsync(timeout.Token);
-        }
-        catch (Exception exception)
-        {
-            throw new InvalidOperationException($"{command} failed. See {Logs}/{label}.*.log", exception);
-        }
+            .WithStandardOutputPipe(PipeTarget.ToStream(Console.OpenStandardOutput()))
+            .WithStandardErrorPipe(PipeTarget.ToStream(Console.OpenStandardError()))
+            .WithValidation(CommandResultValidation.None);
+        var result = await command.ExecuteBufferedAsync(timeout.Token);
+        if (result.ExitCode != 0)
+            throw new InvalidOperationException(
+                $"{command} failed (exit code {result.ExitCode}).\n{result.StandardOutput}\n{result.StandardError}");
     }
 
     private static string FindPackage()
@@ -173,10 +172,11 @@ public sealed class TemplateFixture : IAsyncLifetime
                 using var stream = entry.Open();
                 using var json = JsonDocument.Parse(stream);
                 var definition = json.RootElement;
-                return new Template(entry.FullName.Split('/')[1],
-                    definition.GetProperty("shortName").GetString()!,
+                var shortName = definition.GetProperty("shortName").GetString()!;
+                return new Template(shortName["kiji-".Length..], shortName,
                     definition.GetProperty("identity").GetString()!,
-                    definition.GetProperty("sourceName").GetString()!);
+                    definition.GetProperty("sourceName").GetString()!,
+                    definition.GetProperty("symbols").GetProperty("siteName").GetProperty("defaultValue").GetString()!);
             })
             .OrderBy(template => template.Kind, StringComparer.Ordinal)
             .ToArray();
@@ -193,7 +193,7 @@ public sealed class TemplateFixture : IAsyncLifetime
         throw new InvalidOperationException("Run the tests from a Kiji.Templates checkout.");
     }
 
-    internal sealed record Template(string Kind, string ShortName, string Identity, string SourceName);
+    internal sealed record Template(string Kind, string ShortName, string Identity, string SourceName, string DefaultSiteName);
 }
 
-internal sealed record PublishedSite(string Project, string Output, string Prefix, string Name, string Label, bool OptimizeBuild);
+internal sealed record PublishedSite(string Project, string Output, string Prefix, string Name, bool OptimizeBuild);

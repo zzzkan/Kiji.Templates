@@ -6,11 +6,11 @@ The Kiji library and user documentation live in https://github.com/zzzkan/kiji.
 Use [verify-kiji-template](.agents/skills/verify-kiji-template/SKILL.md) for verification
 and failure triage.
 
-- Keep `src/Kiji.Templates/content/minimal/` minimal and self-contained, with a
+- Keep `src/Kiji.Templates/content/Kiji.Minimal/` minimal and self-contained, with a
   pinned, published Kiji dependency. Do not include build output, local feeds,
   or repository-only settings.
 - Name templates `Kiji <Kind>`, with CLI names `kiji-<kind>`, identities and source
-  project names `Kiji.<Kind>`, and directories `src/Kiji.Templates/content/<kind>/`.
+  project names `Kiji.<Kind>`, and directories `src/Kiji.Templates/content/Kiji.<Kind>/`.
   `Kiji.Templates` is the package and solution name for the collection.
 - `src/Kiji.Templates/Kiji.Templates.csproj` follows the official `templatepack` layout.
   MinVer derives the package version from `v<SemVer>` tags.
@@ -19,12 +19,12 @@ and failure triage.
   verification skill to validate the package, generate projects, and publish
   the generated site. Verify an existing package without repacking it.
   Keep test work directories and diagnostics under `TestResults/`.
-  Use `obj/demos` for demo work and `dist` for the published Pages site.
+  Use `artifacts/demos` for demo work and `dist` for the published Pages site.
   Use the standard NuGet and Playwright caches; do not require shell-wide
   environment overrides for verification. Use the SDK's default package output;
   tests read `src/Kiji.Templates/bin/<Configuration>` for their build configuration.
   Override the package only when needed through `dotnet test --environment
-  KIJI_TEMPLATE_PACKAGE=<nupkg-or-directory>`.
+KIJI_TEMPLATE_PACKAGE=<nupkg-or-directory>`.
 - `Kiji.Templates.Tests` discovers templates from the package and checks generation,
   publishing, and browser behavior. Extend only the relevant behavior checks when
   adding template features; generated-file snapshots are not used.

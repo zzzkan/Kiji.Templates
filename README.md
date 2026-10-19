@@ -22,10 +22,18 @@ dotnet new install Kiji.Templates
 A minimal site with a single home page, ready to customize.
 
 ```sh
-dotnet new kiji-minimal -o MySite
+dotnet new kiji-minimal -o MySite --base-url https://example.org/ --site-name "My Site" --site-description "My personal site." --site-language en --site-author "Your Name"
 ```
 
-[Demo](https://zzzkan.github.io/Kiji.Templates/minimal/)
+| Parameter | Description | Default |
+| --- | --- | --- |
+| `--base-url` | Public URL, including any deployment subpath. | `https://example.com/` |
+| `--site-name` | Site display name. | `Kiji Minimal` |
+| `--site-description` | Site description. | `A minimal site with a single home page.` |
+| `--site-language` | Language tag, such as `en` or `ja`. | `en` |
+| `--site-author` | Site author. | `zzzkan` |
+
+[Demo](https://zzzkan.github.io/Kiji.Templates/kiji-minimal/)
 
 <!-- Add a screenshot of the Kiji Minimal demo here. -->
 
@@ -35,10 +43,18 @@ A blog with dated Markdown posts, Markdown About and Policy pages, inline images
 Prism syntax highlighting via CDN, RSS, and automatic light/dark colors.
 
 ```sh
-dotnet new kiji-blog -o MyBlog
+dotnet new kiji-blog -o MyBlog --base-url https://example.org/blog/ --site-name "My Blog" --site-description "Notes from my days." --site-language en --site-author "Your Name"
 ```
 
-[Demo](https://zzzkan.github.io/Kiji.Templates/blog/)
+| Parameter | Description | Default |
+| --- | --- | --- |
+| `--base-url` | Public URL, including any deployment subpath. | `https://example.com/` |
+| `--site-name` | Site display name. | `Kiji Blog` |
+| `--site-description` | Site description. | `A Markdown blog with RSS and light/dark colors.` |
+| `--site-language` | Language tag, such as `en` or `ja`. | `en` |
+| `--site-author` | Site author. | `zzzkan` |
+
+[Demo](https://zzzkan.github.io/Kiji.Templates/kiji-blog/)
 
 <!-- Add a screenshot of the Kiji Blog demo here. -->
 
@@ -48,9 +64,17 @@ A sample site inspired by the Blazor WebAssembly template,
 with Home, Counter, and Weather pages and JavaScript interactions.
 
 ```sh
-dotnet new kiji-interactive -o MySite
+dotnet new kiji-interactive -o MySite --base-url https://example.org/ --site-name "My Site" --site-description "My interactive site." --site-language en --site-author "Your Name"
 ```
 
-[Demo](https://zzzkan.github.io/Kiji.Templates/interactive/)
+| Parameter | Description | Default |
+| --- | --- | --- |
+| `--base-url` | Public URL, including any deployment subpath. | `https://example.com/` |
+| `--site-name` | Site display name. | `Kiji Interactive` |
+| `--site-description` | Site description. | `Familiar Blazor template pages with JavaScript interactions.` |
+| `--site-language` | Language tag, such as `en` or `ja`. | `en` |
+| `--site-author` | Site author. | `zzzkan` |
+
+[Demo](https://zzzkan.github.io/Kiji.Templates/kiji-interactive/)
 
 <!-- Add a screenshot of the Kiji Interactive demo here. -->

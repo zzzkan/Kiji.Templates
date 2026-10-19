@@ -1,0 +1,108 @@
+{
+  "$schema": "https://json.schemastore.org/template",
+  "author": "zzzkan",
+  "classifications": ["Web", "Static Site"],
+  "identity": "Kiji.Minimal",
+  "name": "Kiji Minimal",
+  "description": "A minimal site with a single home page.",
+  "shortName": "kiji-minimal",
+  "sourceName": "Kiji.Minimal",
+  "preferNameDirectory": true,
+  "tags": {
+    "language": "C#",
+    "type": "project"
+  },
+  "constraints": {
+    "sdk": {
+      "type": "sdk-version",
+      "args": "[10.0.100,)"
+    }
+  },
+  "symbols": {
+    "baseUrl": {
+      "type": "parameter",
+      "datatype": "string",
+      "defaultValue": "https://example.com/",
+      "description": "The public site URL, including any deployment subpath."
+    },
+    "baseUrlLiteral": {
+      "type": "derived",
+      "valueSource": "baseUrl",
+      "valueTransform": "jsonEncode",
+      "replaces": "\"__KIJI_BASE_URL__\""
+    },
+    "siteName": {
+      "type": "parameter",
+      "datatype": "string",
+      "defaultValue": "Kiji Minimal",
+      "description": "The display name of the site."
+    },
+    "siteNameLiteral": {
+      "type": "derived",
+      "valueSource": "siteName",
+      "valueTransform": "jsonEncode",
+      "replaces": "\"__KIJI_SITE_NAME__\""
+    },
+    "description": {
+      "type": "parameter",
+      "datatype": "string",
+      "defaultValue": "A minimal site with a single home page.",
+      "description": "The site description."
+    },
+    "descriptionLiteral": {
+      "type": "derived",
+      "valueSource": "description",
+      "valueTransform": "jsonEncode",
+      "replaces": "\"__KIJI_DESCRIPTION__\""
+    },
+    "language": {
+      "type": "parameter",
+      "datatype": "string",
+      "defaultValue": "en",
+      "description": "The site language tag, for example en or ja."
+    },
+    "languageLiteral": {
+      "type": "derived",
+      "valueSource": "language",
+      "valueTransform": "jsonEncode",
+      "replaces": "\"__KIJI_SITE_LANGUAGE__\""
+    },
+    "author": {
+      "type": "parameter",
+      "datatype": "string",
+      "defaultValue": "zzzkan",
+      "description": "The site author."
+    },
+    "authorLiteral": {
+      "type": "derived",
+      "valueSource": "author",
+      "valueTransform": "jsonEncode",
+      "replaces": "\"__KIJI_SITE_AUTHOR__\""
+    },
+    "skipRestore": {
+      "type": "parameter",
+      "datatype": "bool",
+      "defaultValue": "false",
+      "description": "Skip the automatic restore of the project on create."
+    }
+  },
+  "sources": [
+    {
+      "modifiers": [
+        {
+          "exclude": ["**/dist/**", "**/.kiji/**", "**/.vs/**"]
+        }
+      ]
+    }
+  ],
+  "primaryOutputs": [{ "path": "Kiji.Minimal.csproj" }],
+  "postActions": [
+    {
+      "condition": "(!skipRestore)",
+      "description": "Restore NuGet packages required by this project.",
+      "manualInstructions": [{ "text": "Run 'dotnet restore'." }],
+      "actionId": "210D431B-A78B-4D2F-B762-4ED3E3EA9025",
+      "continueOnError": true
+    }
+  ]
+}

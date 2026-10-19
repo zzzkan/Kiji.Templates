@@ -14,8 +14,8 @@ public class BlogTests(TemplateFixture fixture) : PublishedSiteTest(fixture)
     };
 
     [Theory]
-    [InlineData(false, "/", "MySite")]
-    [InlineData(true, "/Kiji.Templates/blog/", "Travel.Journal")]
+    [InlineData(false, "/", "Kiji Blog")]
+    [InlineData(true, "/Kiji.Templates/blog/", "Kiji Blog")]
     public Task PublishedBlogWorksWithoutJavaScript(bool subpath, string prefix, string siteName)
         => VerifySite("blog", subpath, async (baseUrl, diagnostics) =>
     {

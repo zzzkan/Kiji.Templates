@@ -59,7 +59,7 @@ public sealed class BlogAuthoringTests(TemplateFixture fixture) : IDisposable
         await fixture.Publish(site);
 
         var home = await File.ReadAllTextAsync(Path.Combine(site.Output, "index.html"), TestContext.Current.CancellationToken);
-        Assert.Contains($"<title>Home - {site.Name}</title>", home);
+        Assert.Contains("<title>Home - Kiji Blog</title>", home);
         Assert.Contains("A place for small notes</h1>", home);
         var items = XDocument.Load(Path.Combine(site.Output, "feed.xml")).Root!.Element("channel")!.Elements("item").ToArray();
         Assert.Equal(4, items.Length);
@@ -105,10 +105,7 @@ public sealed class BlogAuthoringTests(TemplateFixture fixture) : IDisposable
         else
             File.Copy(single, bundle);
 
-        await Assert.ThrowsAsync<InvalidOperationException>(() => fixture.Publish(site));
-
-        var stdout = await File.ReadAllTextAsync(Path.Combine(fixture.Logs, $"{site.Label}-publish.stdout.log"), TestContext.Current.CancellationToken);
-        var stderr = await File.ReadAllTextAsync(Path.Combine(fixture.Logs, $"{site.Label}-publish.stderr.log"), TestContext.Current.CancellationToken);
-        Assert.Contains($"duplicate output path '{output.Replace('/', Path.DirectorySeparatorChar)}'", stdout + stderr);
+        var exception = await Assert.ThrowsAsync<InvalidOperationException>(() => fixture.Publish(site));
+        Assert.Contains($"duplicate output path '{output.Replace('/', Path.DirectorySeparatorChar)}'", exception.Message);
     }
 }
