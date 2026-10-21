@@ -13,6 +13,7 @@ dotnet new install Kiji.Templates
 | [Kiji Minimal](#kiji-minimal)         | `kiji-minimal`     | A minimal site with a single home page.                                                                   |
 | [Kiji Blog](#kiji-blog)               | `kiji-blog`        | A Markdown blog with posts, general pages, Prism syntax highlighting, and RSS, built with Razor and Kiji. |
 | [Kiji Interactive](#kiji-interactive) | `kiji-interactive` | Familiar Blazor template pages with JavaScript interactions.                                              |
+| [Kiji Fluent](#kiji-fluent)           | `kiji-fluent`      | A resource library with Fluent UI Razor components, search, category filters, and light/dark colors.      |
 
 ## Kiji Minimal
 
@@ -90,3 +91,34 @@ dotnet new kiji-interactive -o MySite`
 | `--site-description` | Site description. | `Familiar Blazor template pages with JavaScript interactions.` |
 | `--site-language` | Language tag, such as `en` or `ja`. | `en` |
 | `--site-author` | Site author. | `zzzkan` |
+
+## Kiji Fluent
+
+A resource library built with [Fluent UI Blazor](https://github.com/microsoft/fluentui-blazor)
+5.0.1. Includes searchable cards, category filters, a quick-start dialog, a recipe
+page, and responsive light/dark layouts. Kiji publishes the Razor class library's
+components, scoped CSS, and JavaScript assets to a static site.
+
+```pwsh
+dotnet new kiji-fluent -o MyLibrary `
+  --base-url https://example.org/library/ `
+  --site-name "My Library" `
+  --site-description "Tools and ideas worth sharing." `
+  --site-language en `
+  --site-author "Your Name"
+cd MyLibrary
+dotnet watch
+```
+
+| Parameter | Description | Default |
+| --- | --- | --- |
+| `--base-url` | Public URL, including any deployment subpath. | `https://example.com/` |
+| `--site-name` | Site display name. | `Kiji Fluent` |
+| `--site-description` | Site description. | `A resource library built with Fluent UI Razor components and Kiji.` |
+| `--site-language` | Language tag, such as `en` or `ja`. | `en` |
+| `--site-author` | Site author. | `zzzkan` |
+
+Edit `Models/Resource.cs` to curate your own links. Run `dotnet publish -c Release`
+and upload `dist/` to a static host. Browser interactions use web components and
+JavaScript; Blazor event handlers and data binding require a Blazor runtime and
+are not part of the static output. See the generated README for customization.

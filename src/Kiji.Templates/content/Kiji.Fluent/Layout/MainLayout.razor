@@ -1,0 +1,22 @@
+@inherits LayoutComponentBase
+@inject SiteInfo Site
+@inject PageInfo Page
+
+<a class="skip-link" href="#main-content">Skip to content</a>
+<header class="site-header">
+    <a class="brand" href="@Site.ResolveUrl("").AbsolutePath">
+        <span class="brand-mark" aria-hidden="true">k.</span>
+        <span>@Site.Name</span>
+    </a>
+    <nav aria-label="Main navigation">
+        <a href="@Site.ResolveUrl("").AbsolutePath" aria-current="@(Page.Url.AbsolutePath == Site.ResolveUrl("").AbsolutePath ? "page" : null)">Library</a>
+        <a href="@Site.ResolveUrl("guide/").AbsolutePath" aria-current="@(Page.Url.AbsolutePath == Site.ResolveUrl("guide/").AbsolutePath ? "page" : null)">The recipe</a>
+        <a href="https://github.com/zzzkan/kiji">GitHub <span aria-hidden="true">↗</span></a>
+    </nav>
+</header>
+<main id="main-content" tabindex="-1">@Body</main>
+<footer class="site-footer">
+    <a class="brand" href="@Site.ResolveUrl("").AbsolutePath"><span class="brand-mark" aria-hidden="true">k.</span> @Site.Name</a>
+    <p>Made with Razor. Ready for the web.</p>
+    <a href="https://github.com/microsoft/fluentui-blazor">Fluent UI Blazor ↗</a>
+</footer>

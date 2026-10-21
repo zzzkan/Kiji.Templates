@@ -1,0 +1,65 @@
+@page "/"
+@using Kiji.Fluent.Models
+@inject SiteInfo Site
+
+<PageHead Title="@Site.Name" />
+
+<section class="hero" aria-labelledby="hero-title">
+    <div class="hero-copy">
+        <span class="eyebrow">A LITTLE INSPIRATION. A HEAD START.</span>
+        <h1 id="hero-title">Your next idea.<br /><span>Ready to take flight.</span></h1>
+        <p>A thoughtful collection of tools and guides for people who love building for the web.</p>
+        <div class="hero-actions">
+            <a class="primary-link" href="#library">Explore the library <span aria-hidden="true">↓</span></a>
+            <a href="@Site.ResolveUrl("guide/").AbsolutePath">See how it's made <span aria-hidden="true">↗</span></a>
+        </div>
+        <div class="hero-note"><span aria-hidden="true">●</span> Curated for curious builders</div>
+    </div>
+    <div class="hero-art" aria-hidden="true">
+        <div class="orbit orbit-one"></div><div class="orbit orbit-two"></div>
+        <div class="art-card art-card-back"><span>MAKE SOMETHING</span><strong>worth sharing.</strong></div>
+        <div class="art-card art-card-front"><span class="art-symbol">✳</span><div><small>YOUR NEXT CHAPTER</small><strong>Starts here.</strong></div><span>↗</span></div>
+        <span class="art-caption">GOOD TOOLS. GREAT POSSIBILITIES.</span>
+    </div>
+</section>
+
+<section class="library" id="library" aria-labelledby="library-title">
+    <div class="section-heading"><div><span class="eyebrow">THE COLLECTION</span><h2 id="library-title">Less searching. More making.</h2></div><p>From the first sketch to the final publish.</p></div>
+    <div class="library-tools" data-interactive hidden>
+        <div class="filters" role="group" aria-label="Filter resources">
+            @foreach (var category in Resource.All.Select(resource => resource.Category).Distinct().Order().Prepend("All"))
+            {
+                <FluentButton Appearance="@(category == "All" ? ButtonAppearance.Primary : ButtonAppearance.Outline)"
+                              role="button" data-category-filter="@category" aria-pressed="@(category == "All" ? "true" : "false")">@category</FluentButton>
+            }
+        </div>
+        <input id="resource-search" type="search" aria-label="Search resources" placeholder="Find something useful…" />
+    </div>
+    <p class="result-count" role="status" data-result-count>@Resource.All.Count resources to explore</p>
+    <div class="resource-grid">
+        @foreach (var resource in Resource.All)
+        {
+            <ResourceCard Item="resource" />
+        }
+    </div>
+    <div class="empty-state" data-empty hidden><h3>No matches, yet.</h3><p>Try a different word or explore the whole collection.</p><FluentButton role="button" data-reset>Clear filters</FluentButton></div>
+    <noscript><p>The full collection is available above. Enable JavaScript to search and filter resources.</p></noscript>
+</section>
+
+<section class="start-banner" aria-labelledby="start-title">
+    <div><span class="eyebrow">SMALL START. BIG POSSIBILITIES.</span><h2 id="start-title">Make this space your own.</h2><p>Your links. Your style. Your corner of the web.</p></div>
+    <FluentButton Appearance="ButtonAppearance.Primary" role="button" data-open-start data-interactive hidden>Start building <span aria-hidden="true">↗</span></FluentButton>
+    <a href="@Site.ResolveUrl("guide/").AbsolutePath">Read the recipe →</a>
+</section>
+<dialog aria-labelledby="dialog-title" data-start-dialog>
+    <span class="eyebrow">LET'S MAKE SOMETHING</span><h2 id="dialog-title">Your site starts here.</h2>
+    <p>Run these commands with the .NET 10 SDK, then open the local preview.</p>
+    <pre><code>dotnet new install Kiji.Templates
+dotnet new kiji-fluent -o MySite
+cd MySite
+dotnet watch</code></pre>
+    <p>Ready to share? Run <code>dotnet publish -c Release</code> and upload <code>dist/</code> to your static host.</p>
+    <FluentButton role="button" data-close-start>Got it</FluentButton>
+</dialog>
+<script type="module" src="@Assets["Pages/Home.razor.js"]"
+        data-fluent-module="@Site.ResolveUrl("_content/Microsoft.FluentUI.AspNetCore.Components/Microsoft.FluentUI.AspNetCore.Components.lib.module.js").AbsolutePath"></script>

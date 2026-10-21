@@ -38,7 +38,7 @@ from the repository root. Tests never repack. For package-only checks, append
 `--filter-class '*PackageTests'`; filtered tests prepare their own prerequisites.
 
 [Tests](../../../src/Kiji.Templates.Tests/) cover package contents, generation and
-publishing at root and subpaths, Interactive/Blog browser behavior, and Blog authoring.
+publishing at root and subpaths, Interactive/Blog/Fluent browser behavior, and Blog authoring.
 Minimal's root case keeps the ordinary publish path. Other cases and demos select
 the current runtime and import `.github/scripts/verification.targets` through command
 arguments to omit SkiaSharp's native PDBs. These settings never modify generated
@@ -67,6 +67,10 @@ The builder stops on command failure; only Pages enforces a 15-minute timeout.
 - Review inline ARIA expectations in `InteractiveTests.cs` and `BlogTests.cs`
   deliberately. For layout changes, inspect desktop/mobile screenshots, including
   Blog home, post, and dark post views; ARIA does not check styling.
+- For Fluent changes, inspect the home, recipe, and quick-start dialog views,
+  including mobile and dark colors. `FluentTests.cs` checks RCL CSS/JavaScript,
+  filtering, keyboard activation, dialog dismissal, subpath links, and navigation
+  without JavaScript. Keep the published site free of Blazor runtime requests.
 - Add checks only for new behavior. Verify directory installation after exclusion
   changes; run `dotnet watch` or `dotnet clean` in a generated project for preview
   or clean changes.
