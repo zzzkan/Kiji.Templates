@@ -21,6 +21,7 @@ public class BlogTests(TemplateFixture fixture) : PublishedSiteTest(fixture)
     {
         await Page.GotoAsync(baseUrl);
         await Expect(Page).ToHaveTitleAsync($"Home - {siteName}");
+        await ExpectSharedHead(siteName, prefix);
         await Expect(Page.GetByRole(AriaRole.Main)).ToMatchAriaSnapshotAsync($"""
             - main:
               - /children: deep-equal
@@ -57,6 +58,8 @@ public class BlogTests(TemplateFixture fixture) : PublishedSiteTest(fixture)
         await Expect(Page.GetByRole(AriaRole.Main)).ToBeFocusedAsync();
 
         await Page.GetByRole(AriaRole.Link, new() { Name = "A first note", Exact = true }).ClickAsync();
+        await Expect(Page).ToHaveTitleAsync($"A first note - {siteName}");
+        await ExpectSharedHead(siteName, prefix);
         await Expect(Page.GetByRole(AriaRole.Heading, new() { Level = 1 })).ToHaveTextAsync("A first note");
         await Expect(Page.Locator("time")).ToHaveAttributeAsync("datetime", "2026-01-12");
         await Expect(Page.Locator("meta[name=description]")).ToHaveAttributeAsync("content", "Making a little room for writing.");
@@ -125,6 +128,8 @@ public class BlogTests(TemplateFixture fixture) : PublishedSiteTest(fixture)
             sitemap.Root.Elements(sitemapNamespace + "url").Select(url => url.Element(sitemapNamespace + "loc")!.Value));
 
         await Page.GotoAsync($"{baseUrl}404.html");
+        await Expect(Page).ToHaveTitleAsync($"Page not found - {siteName}");
+        await ExpectSharedHead(siteName, prefix);
         await Expect(Page.GetByRole(AriaRole.Heading, new() { Level = 1 })).ToHaveTextAsync("Page not found");
         await Page.GetByRole(AriaRole.Link, new() { Name = "Return to the posts", Exact = true }).ClickAsync();
         await Expect(Page).ToHaveURLAsync(baseUrl);
@@ -132,4 +137,19 @@ public class BlogTests(TemplateFixture fixture) : PublishedSiteTest(fixture)
 
     private async Task AssertNoOverflow() => Assert.True(await Page.EvaluateAsync<bool>(
         "document.documentElement.scrollWidth <= window.innerWidth"));
+
+    private async Task ExpectSharedHead(string siteName, string prefix)
+    {
+        await Expect(Page.Locator("head title")).ToHaveCountAsync(1);
+        await Expect(Page.Locator("head meta[charset]")).ToHaveAttributeAsync("charset", "utf-8");
+        await Expect(Page.Locator("head meta[name=viewport]")).ToHaveAttributeAsync("content", "width=device-width, initial-scale=1");
+        await Expect(Page.Locator("head meta[name=color-scheme]")).ToHaveAttributeAsync("content", "light dark");
+        await Expect(Page.Locator("head link[rel=stylesheet]")).ToHaveCountAsync(3);
+        await Expect(Page.Locator("head link[rel=icon]")).ToHaveCountAsync(1);
+        await Expect(Page.Locator("head link[rel=alternate][type='application/rss+xml']"))
+            .ToHaveAttributeAsync("href", $"{prefix}feed.xml");
+        await Expect(Page.Locator("head link[rel=alternate][type='application/rss+xml']"))
+            .ToHaveAttributeAsync("title", siteName);
+        await Expect(Page.Locator("head script[src][defer]")).ToHaveCountAsync(2);
+    }
 }
