@@ -2,23 +2,6 @@
 @inject SiteInfo Site
 @inject PageInfo Page
 
-<StaticHeadContent>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="color-scheme" content="light dark" />
-    <link rel="stylesheet" href="@(PrismBaseUrl + "/themes/prism.min.css")"
-          media="(prefers-color-scheme: light)" />
-    <link rel="stylesheet" href="@(PrismBaseUrl + "/themes/prism-tomorrow.min.css")"
-          media="(prefers-color-scheme: dark)" />
-    <link rel="stylesheet" href="@Assets["css/app.css"]" />
-    <link rel="alternate" type="application/rss+xml" title="@Site.Name"
-          href="@Site.ResolveUrl("feed.xml").AbsolutePath" />
-    <link rel="icon" type="image/svg+xml"
-          href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ctext x='32' y='52' text-anchor='middle' font-size='52' font-family='Apple Color Emoji, Segoe UI Emoji, Noto Color Emoji, sans-serif'%3E%F0%9F%93%93%3C/text%3E%3C/svg%3E" />
-    <script src="@(PrismBaseUrl + "/components/prism-core.min.js")" defer></script>
-    <script src="@(PrismBaseUrl + "/plugins/autoloader/prism-autoloader.min.js")" defer></script>
-</StaticHeadContent>
-
 <a class="skip-link" href="#content">Skip to content</a>
 <header class="site-header">
     <a class="site-name" href="@Site.ResolveUrl("").AbsolutePath">@Site.Name</a>
@@ -37,8 +20,6 @@
 </footer>
 
 @code {
-    private const string PrismBaseUrl = "https://cdn.jsdelivr.net/npm/prismjs@1.30.0";
-
     private string? Current(string path) =>
         Page.Url.AbsolutePath == Site.ResolveUrl(path).AbsolutePath ? "page" : null;
 }

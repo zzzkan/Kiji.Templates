@@ -119,6 +119,7 @@ public class InteractiveTests(TemplateFixture fixture) : PublishedSiteTest(fixtu
         Assert.Contains("Copyright (c) 2019-2024 The Bootstrap Authors", await notices.TextAsync());
 
         await Page.GotoAsync($"{baseUrl}404.html");
+        await ExpectPageHead("Not Found", "Sorry, the content you are looking for does not exist.", $"https://example.com{prefix}404.html");
         await Expect(Page.GetByRole(AriaRole.Heading, new() { Level = 1 })).ToHaveTextAsync("Not Found");
 
         await using var noJs = await Browser.NewContextAsync(new()
