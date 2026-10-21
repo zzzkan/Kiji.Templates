@@ -18,13 +18,11 @@
     <meta property="og:description" content="@PageDescription" />
     <meta property="og:url" content="@Page.Url.AbsoluteUri" />
     <meta property="og:type" content="website" />
-    @ChildContent
 </HeadContent>
 
 @code {
     [Parameter, EditorRequired] public string PageTitle { get; set; } = string.Empty;
     [Parameter] public string? Description { get; set; }
-    [Parameter] public RenderFragment? ChildContent { get; set; }
 
     private string? PageDescription => Description ?? Site.Description;
 }
