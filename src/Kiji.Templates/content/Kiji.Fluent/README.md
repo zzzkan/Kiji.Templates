@@ -1,11 +1,12 @@
 # Kiji.Fluent
 
-A resource library built with [Fluent UI Blazor](https://github.com/microsoft/fluentui-blazor)
-5.0.1 and Kiji. Includes searchable resource cards, category filters, a quick-start
-dialog, a recipe page, responsive layouts, and automatic light/dark colors.
+A corporate website built with [Fluent UI Blazor](https://github.com/microsoft/fluentui-blazor)
+5.0.1 and Kiji. Includes service introductions, a delivery approach, searchable
+resources, a project planning checklist, and a technology page. Responsive
+layouts and automatic light/dark colors use a restrained navy and blue palette.
 
 ```sh
-dotnet new kiji-fluent -o MySite --base-url https://example.org/ --site-name "My Library"
+dotnet new kiji-fluent -o MySite --base-url https://example.org/ --site-name "Your Company"
 cd MySite
 dotnet watch
 ```
@@ -17,7 +18,7 @@ The .NET 10 SDK is required.
 | --- | --- | --- |
 | `--base-url` | Public URL, including any deployment subpath. | `https://example.com/` |
 | `--site-name` | Site display name. | `Kiji Fluent` |
-| `--site-description` | Site description. | `A resource library built with Fluent UI Razor components and Kiji.` |
+| `--site-description` | Site description. | `A corporate website with Fluent UI components and a searchable resource library.` |
 | `--site-language` | Language tag, such as `en` or `ja`. | `en` |
 | `--site-author` | Site author. | `zzzkan` |
 
@@ -30,9 +31,13 @@ document metadata; translate the page text separately when changing languages.
   Category buttons are generated from the resource list.
 - Change the pages in `Pages/`, the shared layout in `Layout/MainLayout.razor`,
   and the colors and spacing in `wwwroot/css/app.css`.
+- Replace the sample service and approach text with your company's content.
+  Icons are ordinary emoji text in Razor and `Models/Resource.cs`; there are no
+  custom icon images or SVGs. Their appearance follows the visitor's platform.
 - `Components/ResourceCard.razor` composes Fluent UI cards and badges. Its
   `.razor.css` file demonstrates CSS isolation alongside the RCL's own styles.
-- `Pages/Home.razor.js` handles filtering and the native HTML dialog.
+- `Pages/Home.razor.js` handles filtering and the native project checklist dialog.
+  The checklist helps visitors prepare a brief; it does not collect or submit data.
 
 ## Using a Razor class library
 
@@ -43,7 +48,7 @@ stylesheet through `Assets`; it imports the RCL's scoped CSS. The home page
 resolves the RCL module through `Site.ResolveUrl`, so deployment subpaths work
 too. `Pages/Home.razor.js` explicitly calls the pinned Fluent UI version's
 `beforeStart` initializer to register web components and the system theme.
-The recipe and not-found pages need no JavaScript.
+The technology and not-found pages need no JavaScript.
 
 The published site uses HTML, CSS, and JavaScript. It does not run Blazor:
 `@onclick`, `@bind`, and interactive Blazor services do not execute in the

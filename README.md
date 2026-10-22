@@ -13,7 +13,7 @@ dotnet new install Kiji.Templates
 | [Kiji Minimal](#kiji-minimal)         | `kiji-minimal`     | A minimal site with a single home page.                                                                   |
 | [Kiji Blog](#kiji-blog)               | `kiji-blog`        | A Markdown blog with posts, general pages, Prism syntax highlighting, and RSS, built with Razor and Kiji. |
 | [Kiji Interactive](#kiji-interactive) | `kiji-interactive` | Familiar Blazor template pages with JavaScript interactions.                                              |
-| [Kiji Fluent](#kiji-fluent)           | `kiji-fluent`      | A resource library with Fluent UI Razor components, search, category filters, and light/dark colors.      |
+| [Kiji Fluent](#kiji-fluent)           | `kiji-fluent`      | A corporate site with Fluent UI components, services, searchable resources, and light/dark colors.       |
 
 ## Kiji Minimal
 
@@ -94,19 +94,20 @@ dotnet new kiji-interactive -o MySite`
 
 ## Kiji Fluent
 
-A resource library built with [Fluent UI Blazor](https://github.com/microsoft/fluentui-blazor)
-5.0.1. Includes searchable cards, category filters, a quick-start dialog, a recipe
-page, and responsive light/dark layouts. Kiji publishes the Razor class library's
-components, scoped CSS, and JavaScript assets to a static site.
+A corporate website built with [Fluent UI Blazor](https://github.com/microsoft/fluentui-blazor)
+5.0.1. Includes services, a delivery approach, searchable resources, a project
+planning checklist, and responsive light/dark layouts. Icons use emoji text
+directly. Kiji publishes the Razor class library's components, scoped CSS, and
+JavaScript assets to a static site.
 
 ```pwsh
-dotnet new kiji-fluent -o MyLibrary `
-  --base-url https://example.org/library/ `
-  --site-name "My Library" `
-  --site-description "Tools and ideas worth sharing." `
+dotnet new kiji-fluent -o MyCompany `
+  --base-url https://example.org/ `
+  --site-name "Your Company" `
+  --site-description "Digital experiences built around your business." `
   --site-language en `
   --site-author "Your Name"
-cd MyLibrary
+cd MyCompany
 dotnet watch
 ```
 
@@ -114,7 +115,7 @@ dotnet watch
 | --- | --- | --- |
 | `--base-url` | Public URL, including any deployment subpath. | `https://example.com/` |
 | `--site-name` | Site display name. | `Kiji Fluent` |
-| `--site-description` | Site description. | `A resource library built with Fluent UI Razor components and Kiji.` |
+| `--site-description` | Site description. | `A corporate website with Fluent UI components and a searchable resource library.` |
 | `--site-language` | Language tag, such as `en` or `ja`. | `en` |
 | `--site-author` | Site author. | `zzzkan` |
 

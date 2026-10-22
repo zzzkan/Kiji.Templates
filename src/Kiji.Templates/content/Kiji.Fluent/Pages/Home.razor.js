@@ -2,7 +2,7 @@
 // The pinned RCL's beforeStart export registers its web components and theme.
 const script = document.querySelector('script[data-fluent-module]');
 const { beforeStart } = await import(script.dataset.fluentModule);
-document.body.dataset.themeColor = '#21644c';
+document.body.dataset.themeColor = '#254bc4';
 beforeStart({});
 await customElements.whenDefined('fluent-button');
 

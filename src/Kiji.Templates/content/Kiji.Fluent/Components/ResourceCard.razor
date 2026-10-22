@@ -3,12 +3,12 @@
 <article data-resource data-category="@Item.Category">
     <FluentCard Class="resource-card">
         <div class="card-top">
-            <span class="resource-number" aria-hidden="true">@Item.Number</span>
+            <span class="emoji" aria-hidden="true">@Item.Emoji</span>
             <FluentBadge Appearance="BadgeAppearance.Tint" Color="BadgeColor.Brand">@Item.Category</FluentBadge>
         </div>
         <h3><a href="@Item.Url">@Item.Title</a></h3>
         <p>@Item.Description</p>
-        <span class="card-arrow" aria-hidden="true">↗</span>
+        <span class="resource-link" aria-hidden="true">Explore resource</span>
     </FluentCard>
 </article>
 

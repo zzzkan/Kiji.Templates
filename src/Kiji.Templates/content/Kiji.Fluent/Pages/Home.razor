@@ -6,25 +6,68 @@
 
 <section class="hero" aria-labelledby="hero-title">
     <div class="hero-copy">
-        <span class="eyebrow">A LITTLE INSPIRATION. A HEAD START.</span>
-        <h1 id="hero-title">Your next idea.<br /><span>Ready to take flight.</span></h1>
-        <p>A thoughtful collection of tools and guides for people who love building for the web.</p>
+        <span class="eyebrow">STRATEGY. DESIGN. DIGITAL EXPERIENCES.</span>
+        <h1 id="hero-title">A stronger digital presence.<br /><span>Built around your business.</span></h1>
+        <p>Bring your story, services, and expertise together in a digital experience that moves your business forward.</p>
         <div class="hero-actions">
-            <a class="primary-link" href="#library">Explore the library <span aria-hidden="true">↓</span></a>
-            <a href="@Site.ResolveUrl("guide/").AbsolutePath">See how it's made <span aria-hidden="true">↗</span></a>
+            <a class="primary-link" href="#services">Explore our capabilities</a>
+            <a class="text-link" href="#approach">Our approach</a>
         </div>
-        <div class="hero-note"><span aria-hidden="true">●</span> Curated for curious builders</div>
+        <p class="hero-note">Thoughtful experiences. A foundation you can build on.</p>
     </div>
-    <div class="hero-art" aria-hidden="true">
-        <div class="orbit orbit-one"></div><div class="orbit orbit-two"></div>
-        <div class="art-card art-card-back"><span>MAKE SOMETHING</span><strong>worth sharing.</strong></div>
-        <div class="art-card art-card-front"><span class="art-symbol">✳</span><div><small>YOUR NEXT CHAPTER</small><strong>Starts here.</strong></div><span>↗</span></div>
-        <span class="art-caption">GOOD TOOLS. GREAT POSSIBILITIES.</span>
+    <aside class="focus-panel" aria-labelledby="focus-title">
+        <span class="eyebrow">BUILT FOR YOUR NEXT STAGE</span>
+        <h2 id="focus-title">One vision.<br /> Every touchpoint.</h2>
+        <ul class="focus-list">
+            <li><span class="emoji" aria-hidden="true">🌐</span><div><strong>Your corporate presence</strong><p>A clear expression of who you are.</p></div></li>
+            <li><span class="emoji" aria-hidden="true">🚀</span><div><strong>Your next launch</strong><p>A focused introduction to what comes next.</p></div></li>
+            <li><span class="emoji" aria-hidden="true">📚</span><div><strong>Your collective knowledge</strong><p>Expertise, made easier to discover.</p></div></li>
+        </ul>
+        <p class="panel-footer">From the first conversation to the next opportunity.</p>
+    </aside>
+</section>
+
+<section class="services" id="services" aria-labelledby="services-title">
+    <div class="section-heading">
+        <div><span class="eyebrow">OUR CAPABILITIES</span><h2 id="services-title">Business needs.<br />Considered solutions.</h2></div>
+        <p>Connect your brand with the people who matter, at every stage of their journey.</p>
+    </div>
+    <div class="service-grid">
+        <FluentCard Class="service-card">
+            <span class="emoji" aria-hidden="true">🏢</span>
+            <h3>Corporate websites</h3>
+            <p>Tell your story with clarity. Bring your company, services, and values into one coherent experience.</p>
+            <span class="service-detail">Brand storytelling · Service portfolios</span>
+        </FluentCard>
+        <FluentCard Class="service-card">
+            <span class="emoji" aria-hidden="true">🚀</span>
+            <h3>Product experiences</h3>
+            <p>Give your next idea a strong introduction, with focused content and a clear path from interest to understanding.</p>
+            <span class="service-detail">Product launches · Campaign websites</span>
+        </FluentCard>
+        <FluentCard Class="service-card">
+            <span class="emoji" aria-hidden="true">📚</span>
+            <h3>Knowledge platforms</h3>
+            <p>Turn useful information into a shared resource. Help customers and teams find the answers they need.</p>
+            <span class="service-detail">Resource libraries · Documentation</span>
+        </FluentCard>
     </div>
 </section>
 
-<section class="library" id="library" aria-labelledby="library-title">
-    <div class="section-heading"><div><span class="eyebrow">THE COLLECTION</span><h2 id="library-title">Less searching. More making.</h2></div><p>From the first sketch to the final publish.</p></div>
+<section class="approach" id="approach" aria-labelledby="approach-title">
+    <div><span class="eyebrow">HOW WE APPROACH THE WORK</span><h2 id="approach-title">Clarity first.<br />Quality throughout.</h2><p>A shared direction, thoughtful decisions, and a foundation that is easy to build on.</p></div>
+    <ol class="approach-steps">
+        <li><span class="step-number">01</span><div><h3>Understand what matters</h3><p>Start with your audience, business priorities, and the outcomes you want to achieve.</p></div></li>
+        <li><span class="step-number">02</span><div><h3>Make every detail count</h3><p>Shape a consistent experience through clear content, considered design, and reusable components.</p></div></li>
+        <li><span class="step-number">03</span><div><h3>Build for what comes next</h3><p>Publish with confidence and give your team a straightforward way to keep improving.</p></div></li>
+    </ol>
+</section>
+
+<section class="library" id="resources" aria-labelledby="library-title">
+    <div class="section-heading">
+        <div><span class="eyebrow">RESOURCES & PERSPECTIVES</span><h2 id="library-title">A more informed next step.</h2></div>
+        <p>Practical guidance for planning, designing, and publishing your digital presence.</p>
+    </div>
     <div class="library-tools" data-interactive hidden>
         <div class="filters" role="group" aria-label="Filter resources">
             @foreach (var category in Resource.All.Select(resource => resource.Category).Distinct().Order().Prepend("All"))
@@ -33,7 +76,7 @@
                               role="button" data-category-filter="@category" aria-pressed="@(category == "All" ? "true" : "false")">@category</FluentButton>
             }
         </div>
-        <input id="resource-search" type="search" aria-label="Search resources" placeholder="Find something useful…" />
+        <input id="resource-search" type="search" aria-label="Search resources" placeholder="Search the resource library" />
     </div>
     <p class="result-count" role="status" data-result-count>@Resource.All.Count resources to explore</p>
     <div class="resource-grid">
@@ -42,24 +85,29 @@
             <ResourceCard Item="resource" />
         }
     </div>
-    <div class="empty-state" data-empty hidden><h3>No matches, yet.</h3><p>Try a different word or explore the whole collection.</p><FluentButton role="button" data-reset>Clear filters</FluentButton></div>
-    <noscript><p>The full collection is available above. Enable JavaScript to search and filter resources.</p></noscript>
+    <div class="empty-state" data-empty hidden><h3>No matching resources.</h3><p>Try another search or explore the full library.</p><FluentButton role="button" data-reset>Clear filters</FluentButton></div>
+    <noscript><p>The full library is available above. Enable JavaScript to search and filter resources.</p></noscript>
 </section>
 
 <section class="start-banner" aria-labelledby="start-title">
-    <div><span class="eyebrow">SMALL START. BIG POSSIBILITIES.</span><h2 id="start-title">Make this space your own.</h2><p>Your links. Your style. Your corner of the web.</p></div>
-    <FluentButton Appearance="ButtonAppearance.Primary" role="button" data-open-start data-interactive hidden>Start building <span aria-hidden="true">↗</span></FluentButton>
-    <a href="@Site.ResolveUrl("guide/").AbsolutePath">Read the recipe →</a>
+    <div><span class="eyebrow">YOUR NEXT CHAPTER</span><h2 id="start-title">Good work starts with a clear direction.</h2><p>Bring the right questions to your next digital project.</p></div>
+    <div class="banner-actions">
+        <FluentButton Appearance="ButtonAppearance.Primary" role="button" data-open-start data-interactive hidden>Plan your project</FluentButton>
+        <a class="text-link" href="@Site.ResolveUrl("guide/").AbsolutePath">Explore the technology</a>
+    </div>
 </section>
 <dialog aria-labelledby="dialog-title" data-start-dialog>
-    <span class="eyebrow">LET'S MAKE SOMETHING</span><h2 id="dialog-title">Your site starts here.</h2>
-    <p>Run these commands with the .NET 10 SDK, then open the local preview.</p>
-    <pre><code>dotnet new install Kiji.Templates
-dotnet new kiji-fluent -o MySite
-cd MySite
-dotnet watch</code></pre>
-    <p>Ready to share? Run <code>dotnet publish -c Release</code> and upload <code>dist/</code> to your static host.</p>
-    <FluentButton role="button" data-close-start>Got it</FluentButton>
+    <span class="emoji" aria-hidden="true">📋</span>
+    <span class="eyebrow">A STARTING POINT FOR YOUR TEAM</span>
+    <h2 id="dialog-title">Define your next chapter.</h2>
+    <p>Use these questions to shape a shared brief before your project begins.</p>
+    <ol class="brief-list">
+        <li><strong>Your objective</strong><span>What should this website help your business achieve?</span></li>
+        <li><strong>Your audience</strong><span>Who are you speaking to, and what do they need to know?</span></li>
+        <li><strong>Your content</strong><span>Which services, stories, and resources need a home?</span></li>
+        <li><strong>Your next step</strong><span>Who will own the content, and what does a successful launch look like?</span></li>
+    </ol>
+    <FluentButton role="button" data-close-start>Close checklist</FluentButton>
 </dialog>
 <script type="module" src="@Assets["Pages/Home.razor.js"]"
         data-fluent-module="@Site.ResolveUrl("_content/Microsoft.FluentUI.AspNetCore.Components/Microsoft.FluentUI.AspNetCore.Components.lib.module.js").AbsolutePath"></script>

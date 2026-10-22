@@ -1,26 +1,26 @@
 namespace Kiji.Fluent.Models;
 
-public sealed record Resource(string Title, string Category, string Description, string Url, string Number)
+public sealed record Resource(string Title, string Category, string Description, string Url, string Emoji)
 {
     public static IReadOnlyList<Resource> All { get; } =
     [
-        new("Start with a good foundation", "Build",
-            "Create your first Kiji site, add a page, and make it your own.",
-            "https://kiji-docs.zzzkan.workers.dev/docs/getting-started/", "01"),
-        new("Find your Fluent", "Design",
-            "Explore a library of thoughtful components, from buttons to badges.",
-            "https://www.fluentui-blazor.net/", "02"),
-        new("Build once. Use everywhere.", "Build",
-            "Bring reusable Razor components and their styles into your next project.",
-            "https://learn.microsoft.com/aspnet/core/blazor/components/class-libraries", "03"),
-        new("Give every detail a purpose", "Design",
-            "Make clear, inclusive experiences with the Fluent design system.",
-            "https://fluent2.microsoft.design/", "04"),
-        new("A home for your next idea", "Publish",
-            "Take a static site from your repository to the web with GitHub Pages.",
-            "https://docs.github.com/en/pages/getting-started-with-github-pages/what-is-github-pages", "05"),
-        new("Go behind the pages", "Publish",
-            "Explore Kiji's source and discover how Razor becomes a static website.",
-            "https://github.com/zzzkan/kiji", "06"),
+        new("A foundation for your digital presence", "Build",
+            "Plan your first Kiji site and create a structure your team can build on.",
+            "https://kiji-docs.zzzkan.workers.dev/docs/getting-started/", "🏗️"),
+        new("A consistent brand experience", "Design",
+            "Explore Fluent UI components for a coherent experience across every page.",
+            "https://www.fluentui-blazor.net/", "🎨"),
+        new("Reusable by design", "Build",
+            "Share Razor components and styles across your company's digital projects.",
+            "https://learn.microsoft.com/aspnet/core/blazor/components/class-libraries", "🧩"),
+        new("Design for every audience", "Design",
+            "Create clear, inclusive experiences with the Fluent design system.",
+            "https://fluent2.microsoft.design/", "🤝"),
+        new("From repository to public website", "Publish",
+            "Explore a straightforward static publishing workflow with GitHub Pages.",
+            "https://docs.github.com/en/pages/getting-started-with-github-pages/what-is-github-pages", "🌐"),
+        new("An open foundation for your team", "Publish",
+            "Explore Kiji's source and understand the technology behind your website.",
+            "https://github.com/zzzkan/kiji", "📖"),
     ];
 }

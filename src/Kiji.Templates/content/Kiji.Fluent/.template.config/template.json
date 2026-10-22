@@ -4,7 +4,7 @@
   "classifications": ["Web", "Static Site"],
   "identity": "Kiji.Fluent",
   "name": "Kiji Fluent",
-  "description": "A resource library built with Fluent UI Razor components and Kiji.",
+  "description": "A corporate website with Fluent UI components and a searchable resource library.",
   "shortName": "kiji-fluent",
   "sourceName": "Kiji.Fluent",
   "preferNameDirectory": true,
@@ -46,7 +46,7 @@
     "description": {
       "type": "parameter",
       "datatype": "string",
-      "defaultValue": "A resource library built with Fluent UI Razor components and Kiji.",
+      "defaultValue": "A corporate website with Fluent UI components and a searchable resource library.",
       "description": "The site description."
     },
     "descriptionLiteral": {

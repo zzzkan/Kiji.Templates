@@ -1,21 +1,66 @@
-article { height: 100%; }
+article {
+    height: 100%;
+}
+
 article ::deep .resource-card {
+    display: flex;
+    flex-direction: column;
     height: 100%;
     padding: 26px;
     border: 1px solid var(--line);
-    border-radius: 12px;
+    border-radius: 6px;
     background: var(--surface);
+    color: var(--ink);
     box-shadow: none;
     position: relative;
-    transition: border-color .18s, transform .18s;
 }
-article ::deep .resource-card:hover { border-color: var(--accent); transform: translateY(-3px); }
-.card-top { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
-.resource-number { font: 500 14px ui-monospace, monospace; color: var(--muted); }
-h3 { font-size: 21px; letter-spacing: -.6px; line-height: 1.3; margin: 28px 0 12px; }
-a { color: var(--ink); text-decoration: none; }
-a::after { content: ""; position: absolute; inset: 0; border-radius: 12px; }
-a:focus-visible::after { outline: 3px solid var(--accent); outline-offset: 4px; }
-p { color: var(--muted); line-height: 1.65; margin: 0 0 26px; max-width: 34ch; }
-.card-arrow { display: block; text-align: right; color: var(--accent); font-size: 24px; }
-@media (prefers-reduced-motion: reduce) { article ::deep .resource-card { transition: none; } }
+
+article ::deep .resource-card:hover {
+    border-color: var(--accent);
+}
+
+.card-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+}
+
+h3 {
+    font-size: 20px;
+    letter-spacing: -.3px;
+    line-height: 1.35;
+    margin: 24px 0 12px;
+}
+
+a {
+    color: var(--ink);
+    text-decoration: none;
+}
+
+a::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: 6px;
+}
+
+a:focus-visible::after {
+    outline: 3px solid var(--accent);
+    outline-offset: 4px;
+}
+
+p {
+    color: var(--muted);
+    font-size: 14px;
+    line-height: 1.75;
+    margin: 0 0 24px;
+}
+
+.resource-link {
+    display: block;
+    margin-top: auto;
+    color: var(--accent);
+    font-size: 12px;
+    font-weight: 600;
+}
