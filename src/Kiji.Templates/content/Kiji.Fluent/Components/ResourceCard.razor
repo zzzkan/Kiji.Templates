@@ -1,16 +1,13 @@
 @using Kiji.Fluent.Models
 
-<article data-resource data-category="@Item.Category">
-    <FluentCard Class="resource-card">
-        <div class="card-top">
-            <span class="emoji" aria-hidden="true">@Item.Emoji</span>
-            <FluentBadge Appearance="BadgeAppearance.Tint" Color="BadgeColor.Brand">@Item.Category</FluentBadge>
-        </div>
-        <h3><a href="@Item.Url">@Item.Title</a></h3>
-        <p>@Item.Description</p>
-        <span class="resource-link" aria-hidden="true">Explore resource</span>
-    </FluentCard>
-</article>
+<FluentCard Height="100%" Role="article">
+    <FluentStack HorizontalAlignment="HorizontalAlignment.SpaceBetween" VerticalAlignment="VerticalAlignment.Center">
+        <span class="emoji" aria-hidden="true">@Item.Emoji</span>
+        <FluentBadge Appearance="BadgeAppearance.Tint" Color="BadgeColor.Brand">@Item.Category</FluentBadge>
+    </FluentStack>
+    <h3><a href="@Item.Url">@Item.Title</a></h3>
+    <p>@Item.Description</p>
+</FluentCard>
 
 @code {
     [Parameter, EditorRequired] public Resource Item { get; set; } = default!;

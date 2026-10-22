@@ -26,8 +26,8 @@ translate the page text separately.
 
 - Replace the sample content in `Pages/Home.razor` and `Layout/MainLayout.razor`.
 - Edit resource links and categories in `Models/Resource.cs`.
-- Adjust the theme in `wwwroot/css/app.css` and card styles in
-  `Components/ResourceCard.razor.css`.
+- Adjust page spacing in `wwwroot/css/app.css`. Components use Fluent UI's
+  default theme, which follows the system's light/dark preference.
 - Edit search and filters in `Pages/Home.razor.js`. Use JavaScript for browser
   interactions; Blazor's `@onclick` and `@bind` do not run on this static site.
 

@@ -1,8 +1,3 @@
-// Static pages must initialize Fluent's web components without Blazor.
-const script = document.querySelector('script[data-fluent-module]');
-const { beforeStart } = await import(script.dataset.fluentModule);
-document.body.dataset.themeColor = '#254bc4';
-beforeStart({});
 await customElements.whenDefined('fluent-button');
 
 const cards = [...document.querySelectorAll('[data-resource]')];

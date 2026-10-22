@@ -21,8 +21,7 @@ public sealed class FluentTests(TemplateFixture fixture) : PublishedSiteTest(fix
         await Expect(cards).ToHaveCountAsync(6);
         var search = Page.GetByRole(AriaRole.Searchbox, new() { Name = "Search resources" });
         await Expect(search).ToBeVisibleAsync();
-        // Both the template's isolated CSS and the RCL stylesheet must be published.
-        await Expect(Page.Locator(".resource-card").First).ToHaveCSSAsync("position", "relative");
+        var lightBackground = await Page.Locator("body").EvaluateAsync<string>("element => getComputedStyle(element).backgroundColor");
         Assert.Contains(requests, url => url.EndsWith("Microsoft.FluentUI.AspNetCore.Components.bundle.scp.css", StringComparison.Ordinal));
         Assert.DoesNotContain(requests, url => url.Contains("/_framework/", StringComparison.Ordinal)
             || url.EndsWith(".wasm", StringComparison.Ordinal));
@@ -48,6 +47,7 @@ public sealed class FluentTests(TemplateFixture fixture) : PublishedSiteTest(fix
         await Expect(search).ToHaveValueAsync("");
 
         await Page.GotoAsync(baseUrl + "404.html");
+        await Expect(Page.Locator("body")).ToHaveCSSAsync("background-color", lightBackground);
         await Page.GetByRole(AriaRole.Link, new() { Name = "Back to overview" }).ClickAsync();
         await Expect(Page).ToHaveURLAsync(baseUrl);
         await Page.GetByRole(AriaRole.Navigation).GetByRole(AriaRole.Link, new() { Name = "Resources", Exact = true }).ClickAsync();
@@ -62,6 +62,7 @@ public sealed class FluentTests(TemplateFixture fixture) : PublishedSiteTest(fix
         await Page.EmulateMediaAsync(new() { ColorScheme = ColorScheme.Dark });
         await Page.ReloadAsync();
         await Expect(search).ToBeVisibleAsync();
+        await Expect(Page.Locator("body")).Not.ToHaveCSSAsync("background-color", lightBackground);
         await Page.ScreenshotAsync(new() { Path = Path.Combine(diagnostics, "home-mobile-dark.png"), FullPage = true });
 
         await using var noJs = await Browser.NewContextAsync(new()
