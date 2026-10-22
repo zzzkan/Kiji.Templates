@@ -3,15 +3,6 @@ article {
 }
 
 article ::deep .resource-card {
-    display: flex;
-    flex-direction: column;
-    height: 100%;
-    padding: 26px;
-    border: 1px solid var(--line);
-    border-radius: 6px;
-    background: var(--surface);
-    color: var(--ink);
-    box-shadow: none;
     position: relative;
 }
 

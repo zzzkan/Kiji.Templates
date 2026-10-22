@@ -67,10 +67,9 @@ The builder stops on command failure; only Pages enforces a 15-minute timeout.
 - Review inline ARIA expectations in `InteractiveTests.cs` and `BlogTests.cs`
   deliberately. For layout changes, inspect desktop/mobile screenshots, including
   Blog home, post, and dark post views; ARIA does not check styling.
-- For Fluent changes, inspect the home, technology, and project checklist views,
-  including mobile and dark colors. `FluentTests.cs` checks RCL CSS/JavaScript,
-  filtering, keyboard activation, dialog dismissal, subpath links, and navigation
-  without JavaScript. Keep the published site free of Blazor runtime requests.
+- For Fluent changes, inspect the home page at desktop/mobile widths and in dark
+  colors. `FluentTests.cs` checks RCL assets, filtering, keyboard activation, and
+  subpath links with and without JavaScript. Keep the site free of Blazor runtime requests.
 - Add checks only for new behavior. Verify directory installation after exclusion
   changes; run `dotnet watch` or `dotnet clean` in a generated project for preview
   or clean changes.

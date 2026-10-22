@@ -94,19 +94,13 @@ dotnet new kiji-interactive -o MySite`
 
 ## Kiji Fluent
 
-A corporate website built with [Fluent UI Blazor](https://github.com/microsoft/fluentui-blazor)
-5.0.1. Includes services, a delivery approach, searchable resources, a project
-planning checklist, and responsive light/dark layouts. Icons use emoji text
-directly. Kiji publishes the Razor class library's components, scoped CSS, and
-JavaScript assets to a static site.
+A corporate website with [Fluent UI Blazor](https://github.com/microsoft/fluentui-blazor),
+searchable resources, and responsive light/dark layouts.
 
 ```pwsh
 dotnet new kiji-fluent -o MyCompany `
   --base-url https://example.org/ `
-  --site-name "Your Company" `
-  --site-description "Digital experiences built around your business." `
-  --site-language en `
-  --site-author "Your Name"
+  --site-name "Your Company"
 cd MyCompany
 dotnet watch
 ```
@@ -119,7 +113,5 @@ dotnet watch
 | `--site-language` | Language tag, such as `en` or `ja`. | `en` |
 | `--site-author` | Site author. | `zzzkan` |
 
-Edit `Models/Resource.cs` to curate your own links. Run `dotnet publish -c Release`
-and upload `dist/` to a static host. Browser interactions use web components and
-JavaScript; Blazor event handlers and data binding require a Blazor runtime and
-are not part of the static output. See the generated README for customization.
+Run `dotnet publish -c Release` and upload `dist/` to a static host.
+See the generated README for customization.

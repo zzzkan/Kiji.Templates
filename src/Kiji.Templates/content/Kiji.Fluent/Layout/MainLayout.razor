@@ -12,15 +12,11 @@
         <a href="@Site.ResolveUrl("").AbsolutePath" aria-current="@(Page.Url.AbsolutePath == Site.ResolveUrl("").AbsolutePath ? "page" : null)">Overview</a>
         <a href="@Site.ResolveUrl("").AbsolutePath#services">Capabilities</a>
         <a href="@Site.ResolveUrl("").AbsolutePath#resources">Resources</a>
-        <a href="@Site.ResolveUrl("guide/").AbsolutePath" aria-current="@(Page.Url.AbsolutePath == Site.ResolveUrl("guide/").AbsolutePath ? "page" : null)">Technology</a>
+        <a href="@Site.ResolveUrl("").AbsolutePath#plan">Plan your project</a>
     </nav>
 </header>
 <main id="main-content" tabindex="-1">@Body</main>
 <footer class="site-footer">
-    <div class="footer-main">
-        <div><a class="brand" href="@Site.ResolveUrl("").AbsolutePath"><span class="emoji" aria-hidden="true">🏢</span> @Site.Name</a><p>Considered experiences.<br />Lasting digital value.</p></div>
-        <div class="footer-links"><span class="eyebrow">EXPLORE</span><a href="@Site.ResolveUrl("").AbsolutePath#services">Our capabilities</a><a href="@Site.ResolveUrl("").AbsolutePath#approach">Our approach</a><a href="@Site.ResolveUrl("guide/").AbsolutePath">The technology</a></div>
-        <div class="footer-links"><span class="eyebrow">BUILT WITH</span><a href="https://github.com/zzzkan/kiji">Kiji</a><a href="https://github.com/microsoft/fluentui-blazor">Fluent UI Blazor</a></div>
-    </div>
-    <div class="footer-bottom"><span>A corporate website template, ready to make your own.</span><span>Razor components. Static publishing.</span></div>
+    <span>@Site.Name</span>
+    <a href="@Site.ResolveUrl("").AbsolutePath#plan">Plan your project</a>
 </footer>

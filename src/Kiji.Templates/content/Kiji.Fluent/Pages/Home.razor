@@ -13,7 +13,6 @@
             <a class="primary-link" href="#services">Explore our capabilities</a>
             <a class="text-link" href="#approach">Our approach</a>
         </div>
-        <p class="hero-note">Thoughtful experiences. A foundation you can build on.</p>
     </div>
     <aside class="focus-panel" aria-labelledby="focus-title">
         <span class="eyebrow">BUILT FOR YOUR NEXT STAGE</span>
@@ -23,7 +22,6 @@
             <li><span class="emoji" aria-hidden="true">🚀</span><div><strong>Your next launch</strong><p>A focused introduction to what comes next.</p></div></li>
             <li><span class="emoji" aria-hidden="true">📚</span><div><strong>Your collective knowledge</strong><p>Expertise, made easier to discover.</p></div></li>
         </ul>
-        <p class="panel-footer">From the first conversation to the next opportunity.</p>
     </aside>
 </section>
 
@@ -37,19 +35,16 @@
             <span class="emoji" aria-hidden="true">🏢</span>
             <h3>Corporate websites</h3>
             <p>Tell your story with clarity. Bring your company, services, and values into one coherent experience.</p>
-            <span class="service-detail">Brand storytelling · Service portfolios</span>
         </FluentCard>
         <FluentCard Class="service-card">
             <span class="emoji" aria-hidden="true">🚀</span>
             <h3>Product experiences</h3>
             <p>Give your next idea a strong introduction, with focused content and a clear path from interest to understanding.</p>
-            <span class="service-detail">Product launches · Campaign websites</span>
         </FluentCard>
         <FluentCard Class="service-card">
             <span class="emoji" aria-hidden="true">📚</span>
             <h3>Knowledge platforms</h3>
             <p>Turn useful information into a shared resource. Help customers and teams find the answers they need.</p>
-            <span class="service-detail">Resource libraries · Documentation</span>
         </FluentCard>
     </div>
 </section>
@@ -68,7 +63,7 @@
         <div><span class="eyebrow">RESOURCES & PERSPECTIVES</span><h2 id="library-title">A more informed next step.</h2></div>
         <p>Practical guidance for planning, designing, and publishing your digital presence.</p>
     </div>
-    <div class="library-tools" data-interactive hidden>
+    <div class="library-tools" hidden>
         <div class="filters" role="group" aria-label="Filter resources">
             @foreach (var category in Resource.All.Select(resource => resource.Category).Distinct().Order().Prepend("All"))
             {
@@ -86,20 +81,11 @@
         }
     </div>
     <div class="empty-state" data-empty hidden><h3>No matching resources.</h3><p>Try another search or explore the full library.</p><FluentButton role="button" data-reset>Clear filters</FluentButton></div>
-    <noscript><p>The full library is available above. Enable JavaScript to search and filter resources.</p></noscript>
 </section>
 
-<section class="start-banner" aria-labelledby="start-title">
-    <div><span class="eyebrow">YOUR NEXT CHAPTER</span><h2 id="start-title">Good work starts with a clear direction.</h2><p>Bring the right questions to your next digital project.</p></div>
-    <div class="banner-actions">
-        <FluentButton Appearance="ButtonAppearance.Primary" role="button" data-open-start data-interactive hidden>Plan your project</FluentButton>
-        <a class="text-link" href="@Site.ResolveUrl("guide/").AbsolutePath">Explore the technology</a>
-    </div>
-</section>
-<dialog aria-labelledby="dialog-title" data-start-dialog>
-    <span class="emoji" aria-hidden="true">📋</span>
-    <span class="eyebrow">A STARTING POINT FOR YOUR TEAM</span>
-    <h2 id="dialog-title">Define your next chapter.</h2>
+<section class="project-brief" id="plan" aria-labelledby="plan-title">
+    <span class="eyebrow">YOUR NEXT CHAPTER</span>
+    <h2 id="plan-title">Plan your project.</h2>
     <p>Use these questions to shape a shared brief before your project begins.</p>
     <ol class="brief-list">
         <li><strong>Your objective</strong><span>What should this website help your business achieve?</span></li>
@@ -107,7 +93,6 @@
         <li><strong>Your content</strong><span>Which services, stories, and resources need a home?</span></li>
         <li><strong>Your next step</strong><span>Who will own the content, and what does a successful launch look like?</span></li>
     </ol>
-    <FluentButton role="button" data-close-start>Close checklist</FluentButton>
-</dialog>
+</section>
 <script type="module" src="@Assets["Pages/Home.razor.js"]"
         data-fluent-module="@Site.ResolveUrl("_content/Microsoft.FluentUI.AspNetCore.Components/Microsoft.FluentUI.AspNetCore.Components.lib.module.js").AbsolutePath"></script>
