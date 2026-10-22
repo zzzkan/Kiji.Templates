@@ -48,6 +48,9 @@ native library is copied. Keep the ordinary smoke case when changing these optio
 Tests and demos isolate registrations with `--debug:custom-hive`; recheck
 installation and generation after SDK upgrades.
 
+Tests remove generated `bin` and `obj` even on failure. Diagnostics stay under
+`TestResults/`; automatic cleanup keeps five recent inactive runs and reports.
+
 ## GitHub Pages demos
 
 Build with the script shared by [Pages](../../../.github/workflows/pages.yml):
@@ -61,6 +64,8 @@ when verifying one. Run from the repository root; relative paths resolve from th
 current directory. Pass `-BaseUrl` without a trailing slash. Each demo uses its
 template's short name as the directory, such as `kiji-minimal/`.
 The builder stops on command failure; only Pages enforces a 15-minute timeout.
+The builder removes `bin` and `obj` even on failure. Stop previews before replacing
+old demos in `artifacts/demos` and `dist`; do not archive copies in `TestResults/`.
 
 ## Diagnostics and targeted checks
 

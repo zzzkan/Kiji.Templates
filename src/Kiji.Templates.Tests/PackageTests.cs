@@ -4,10 +4,8 @@ using Xunit;
 namespace Kiji.Templates.Tests;
 
 [Collection("Templates")]
-public sealed class PackageTests(TemplateFixture fixture) : IDisposable
+public sealed class PackageTests(TemplateFixture fixture)
 {
-    public void Dispose() => fixture.RecordTestResult();
-
     [Fact]
     public Task PackageDefinitionsAreValid() => fixture.ValidatePackage();
 

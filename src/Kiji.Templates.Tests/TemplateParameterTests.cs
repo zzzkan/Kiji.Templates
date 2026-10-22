@@ -6,10 +6,8 @@ using Xunit;
 namespace Kiji.Templates.Tests;
 
 [Collection("Templates")]
-public sealed class TemplateParameterTests(TemplateFixture fixture) : IDisposable
+public sealed class TemplateParameterTests(TemplateFixture fixture)
 {
-    public void Dispose() => fixture.RecordTestResult();
-
     public static TheoryData<string> TemplateKinds => new(TemplateFixture.Templates.Select(template => template.Kind));
 
     [Theory]

@@ -16,12 +16,10 @@ public sealed class TemplateFixture : IAsyncLifetime
     internal static string PackagePath { get; } = FindPackage();
     internal static Template[] Templates { get; } = ReadTemplates();
 
-    private string RunDirectory { get; } = Path.Combine(
-        Repository, "TestResults", $"tests-{Guid.NewGuid():N}");
+    private readonly TestRunDirectory run = new(Path.Combine(Repository, "TestResults"));
+    private string RunDirectory => run.Root;
     internal string Logs { get; }
     private readonly Dictionary<(string, bool), Task<PublishedSite>> sites = [];
-    private readonly HashSet<string> projects = [];
-    private bool preserveBuildOutput;
 
     public TemplateFixture() => Logs = Directory.CreateDirectory(Path.Combine(RunDirectory, "logs")).FullName;
 
@@ -29,26 +27,9 @@ public sealed class TemplateFixture : IAsyncLifetime
 
     public ValueTask DisposeAsync()
     {
-        if (!preserveBuildOutput && !TestContext.Current.CancellationToken.IsCancellationRequested)
-        {
-            foreach (var project in projects)
-            {
-                foreach (var name in new[] { "bin", "obj" })
-                {
-                    var directory = Path.GetFullPath(Path.Combine(project, name));
-                    Assert.StartsWith(Path.GetFullPath(RunDirectory) + Path.DirectorySeparatorChar, directory,
-                        OperatingSystem.IsWindows() ? StringComparison.OrdinalIgnoreCase : StringComparison.Ordinal);
-                    if (Directory.Exists(directory))
-                        Directory.Delete(directory, recursive: true);
-                }
-            }
-        }
+        run.Dispose();
         return ValueTask.CompletedTask;
     }
-
-    // Called from each test's teardown, after assertions and browser cleanup.
-    internal void RecordTestResult(bool cleanupSucceeded = true) =>
-        preserveBuildOutput |= !cleanupSucceeded || TestContext.Current.TestState?.Result != TestResult.Passed;
 
     internal Task ValidatePackage() => RunDotnet(
         "msbuild", Path.Combine(Repository, "src", "Kiji.Templates", "Kiji.Templates.csproj"), "-restore",
@@ -76,8 +57,7 @@ public sealed class TemplateFixture : IAsyncLifetime
         var template = Templates.Single(template => template.Kind == kind);
         var name = subpath ? "Travel.Journal" : "MySite";
         var caseName = scenario ?? (subpath ? "subpath" : "root");
-        var project = Path.Combine(RunDirectory, "sites", kind, caseName, "MySite");
-        projects.Add(project);
+        var project = run.ProjectDirectory(kind, caseName);
         var prefix = subpath ? $"/Kiji.Templates/{kind}/" : "/";
         // Keep one ordinary publish as a smoke test of the user's default path.
         var optimizeBuild = kind != "minimal" || subpath || scenario is not null;
