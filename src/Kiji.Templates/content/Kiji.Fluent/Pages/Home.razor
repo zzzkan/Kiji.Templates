@@ -1,0 +1,130 @@
+@page "/"
+@using Kiji.Fluent.Models
+@inject SiteInfo Site
+
+<PageHead Title="@Site.Name" />
+
+<section class="hero" aria-labelledby="hero-title">
+    <FluentGrid Spacing="4">
+        <FluentGridItem Xs="12" Md="7">
+            <p class="eyebrow">STRATEGY. DESIGN. DIGITAL EXPERIENCES.</p>
+            <h1 id="hero-title">A stronger digital presence.<br />Built around your business.</h1>
+            <p>Bring your story, services, and expertise together in a digital experience that moves your business forward.</p>
+            <FluentStack Wrap="true" HorizontalGap="16" VerticalGap="8">
+                <a href="#services">Explore our capabilities</a>
+                <a href="#approach">Our approach</a>
+            </FluentStack>
+        </FluentGridItem>
+        <FluentGridItem Xs="12" Md="5">
+            <aside aria-labelledby="focus-title">
+                <FluentCard Appearance="CardAppearance.Filled">
+                    <p class="eyebrow">BUILT FOR YOUR NEXT STAGE</p>
+                    <h2 id="focus-title">One vision.<br />Every touchpoint.</h2>
+                    <ul class="focus-list">
+                        <li><span aria-hidden="true">🌐</span> <strong>Your corporate presence</strong><p>A clear expression of who you are.</p></li>
+                        <li><span aria-hidden="true">🚀</span> <strong>Your next launch</strong><p>A focused introduction to what comes next.</p></li>
+                        <li><span aria-hidden="true">📚</span> <strong>Your collective knowledge</strong><p>Expertise, made easier to discover.</p></li>
+                    </ul>
+                </FluentCard>
+            </aside>
+        </FluentGridItem>
+    </FluentGrid>
+</section>
+
+<section id="services" aria-labelledby="services-title">
+    <p class="eyebrow">OUR CAPABILITIES</p>
+    <h2 id="services-title">Business needs. Considered solutions.</h2>
+    <p>Connect your brand with the people who matter, at every stage of their journey.</p>
+    <FluentGrid Spacing="3">
+        <FluentGridItem Xs="12" Md="4">
+            <FluentCard Height="100%">
+                <span class="emoji" aria-hidden="true">🏢</span>
+                <h3>Corporate websites</h3>
+                <p>Tell your story with clarity. Bring your company, services, and values into one coherent experience.</p>
+            </FluentCard>
+        </FluentGridItem>
+        <FluentGridItem Xs="12" Md="4">
+            <FluentCard Height="100%">
+                <span class="emoji" aria-hidden="true">🚀</span>
+                <h3>Product experiences</h3>
+                <p>Give your next idea a strong introduction, with focused content and a clear path from interest to understanding.</p>
+            </FluentCard>
+        </FluentGridItem>
+        <FluentGridItem Xs="12" Md="4">
+            <FluentCard Height="100%">
+                <span class="emoji" aria-hidden="true">📚</span>
+                <h3>Knowledge platforms</h3>
+                <p>Turn useful information into a shared resource. Help customers and teams find the answers they need.</p>
+            </FluentCard>
+        </FluentGridItem>
+    </FluentGrid>
+</section>
+
+<section id="approach" aria-labelledby="approach-title">
+    <FluentCard Appearance="CardAppearance.Filled">
+        <FluentGrid Spacing="4">
+            <FluentGridItem Xs="12" Md="6">
+                <p class="eyebrow">HOW WE APPROACH THE WORK</p>
+                <h2 id="approach-title">Clarity first.<br />Quality throughout.</h2>
+                <p>A shared direction, thoughtful decisions, and a foundation that is easy to build on.</p>
+            </FluentGridItem>
+            <FluentGridItem Xs="12" Md="6">
+                <ol>
+                    <li><h3>Understand what matters</h3><p>Start with your audience, business priorities, and the outcomes you want to achieve.</p></li>
+                    <li><h3>Make every detail count</h3><p>Shape a consistent experience through clear content, considered design, and reusable components.</p></li>
+                    <li><h3>Build for what comes next</h3><p>Publish with confidence and give your team a straightforward way to keep improving.</p></li>
+                </ol>
+            </FluentGridItem>
+        </FluentGrid>
+    </FluentCard>
+</section>
+
+<section id="resources" aria-labelledby="library-title">
+    <p class="eyebrow">RESOURCES & PERSPECTIVES</p>
+    <h2 id="library-title">A more informed next step.</h2>
+    <p>Practical guidance for planning, designing, and publishing your digital presence.</p>
+    <FluentGrid Class="library-tools" Spacing="2" hidden>
+        <FluentGridItem Xs="12" Sm="8">
+            <FluentStack Wrap="true" HorizontalGap="8" VerticalGap="8" role="group" aria-label="Filter resources">
+                @foreach (var category in Resource.All.Select(resource => resource.Category).Distinct().Order().Prepend("All"))
+                {
+                    <FluentButton Appearance="@(category == "All" ? ButtonAppearance.Primary : ButtonAppearance.Outline)"
+                                  role="button" data-category-filter="@category" aria-pressed="@(category == "All" ? "true" : "false")">@category</FluentButton>
+                }
+            </FluentStack>
+        </FluentGridItem>
+        <FluentGridItem Xs="12" Sm="4">
+            @* FluentTextInput needs Blazor interop to label its shadow input. *@
+            <input id="resource-search" type="search" aria-label="Search resources" placeholder="Search resources" />
+        </FluentGridItem>
+    </FluentGrid>
+    <p class="result-count" role="status" data-result-count>@Resource.All.Count resources to explore</p>
+    <FluentGrid Spacing="3">
+        @foreach (var resource in Resource.All)
+        {
+            <FluentGridItem Xs="12" Sm="6" Md="4" data-resource data-category="@resource.Category">
+                <ResourceCard Item="resource" />
+            </FluentGridItem>
+        }
+    </FluentGrid>
+    <div data-empty hidden>
+        <h3>No matching resources.</h3>
+        <p>Try another search or explore the full library.</p>
+        <FluentButton role="button" data-reset>Clear filters</FluentButton>
+    </div>
+</section>
+
+<section id="plan" aria-labelledby="plan-title">
+    <FluentCard Appearance="CardAppearance.Filled">
+        <p class="eyebrow">YOUR NEXT CHAPTER</p>
+        <h2 id="plan-title">Plan your project.</h2>
+        <p>Use these questions to shape a shared brief before your project begins.</p>
+        <ol>
+            <li><strong>Your objective</strong><p>What should this website help your business achieve?</p></li>
+            <li><strong>Your audience</strong><p>Who are you speaking to, and what do they need to know?</p></li>
+            <li><strong>Your content</strong><p>Which services, stories, and resources need a home?</p></li>
+            <li><strong>Your next step</strong><p>Who will own the content, and what does a successful launch look like?</p></li>
+        </ol>
+    </FluentCard>
+</section>
+<script type="module" src="@Assets["Pages/Home.razor.js"]"></script>

@@ -5,10 +5,8 @@ using Xunit;
 namespace Kiji.Templates.Tests;
 
 [Collection("Templates")]
-public sealed class BlogAuthoringTests(TemplateFixture fixture) : IDisposable
+public sealed class BlogAuthoringTests(TemplateFixture fixture)
 {
-    public void Dispose() => fixture.RecordTestResult();
-
     [Fact]
     public async Task MarkdownPostsAndGeneralPagesPublishInTheirOwnCollections()
     {

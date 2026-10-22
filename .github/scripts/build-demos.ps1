@@ -49,15 +49,30 @@ dotnet new install $package --debug:custom-hive $hive
 $templates = $templates | Sort-Object shortName
 foreach ($template in $templates) {
     $name = $template.shortName
-    $project = Join-Path $work $name
-    dotnet new $name --name $template.sourceName -o $project `
-        --base-url "$BaseUrl/$name/" --no-restore --debug:custom-hive $hive
-    $siteOutput = Join-Path $output $name
-    dotnet publish (Join-Path $project "$($template.sourceName).csproj") -c Release -o $siteOutput `
-        -p:UseCurrentRuntimeIdentifier=true -p:SelfContained=false `
-        "-p:CustomAfterMicrosoftCommonTargets=$(Join-Path $PSScriptRoot 'verification.targets')"
-    if (!(Test-Path -LiteralPath (Join-Path $siteOutput 'index.html') -PathType Leaf)) {
-        throw "No index.html published for $name."
+    $project = [IO.Path]::GetFullPath((Join-Path $work $name))
+    $comparison = if ($IsWindows) { [StringComparison]::OrdinalIgnoreCase } else { [StringComparison]::Ordinal }
+    if (!$project.StartsWith($work.TrimEnd([IO.Path]::DirectorySeparatorChar) + [IO.Path]::DirectorySeparatorChar, $comparison)) {
+        throw "Project path is outside the demo work directory: $project"
+    }
+    try {
+        dotnet new $name --name $template.sourceName -o $project `
+            --base-url "$BaseUrl/$name/" --no-restore --debug:custom-hive $hive
+        $siteOutput = Join-Path $output $name
+        dotnet publish (Join-Path $project "$($template.sourceName).csproj") -c Release -o $siteOutput `
+            -p:UseCurrentRuntimeIdentifier=true -p:SelfContained=false `
+            "-p:CustomAfterMicrosoftCommonTargets=$(Join-Path $PSScriptRoot 'verification.targets')"
+        if (!(Test-Path -LiteralPath (Join-Path $siteOutput 'index.html') -PathType Leaf)) {
+            throw "No index.html published for $name."
+        }
+    }
+    finally {
+        foreach ($directory in @('bin', 'obj')) {
+            $buildOutput = Join-Path $project $directory
+            if (Test-Path -LiteralPath $buildOutput) {
+                try { Remove-Item -LiteralPath $buildOutput -Recurse -Force }
+                catch { Write-Warning "Could not clean ${buildOutput}: $_" }
+            }
+        }
     }
 }
 

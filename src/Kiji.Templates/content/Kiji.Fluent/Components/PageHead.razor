@@ -1,0 +1,22 @@
+@inject SiteInfo Site
+@inject PageInfo Page
+
+<PageTitle>@Title</PageTitle>
+<HeadContent>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="@(Description ?? Site.Description)" />
+    <link rel="canonical" href="@Page.Url.AbsoluteUri" />
+    <meta property="og:title" content="@Title" />
+    <meta property="og:description" content="@(Description ?? Site.Description)" />
+    <meta property="og:url" content="@Page.Url.AbsoluteUri" />
+    <meta property="og:type" content="website" />
+    <link rel="stylesheet" href="@Site.ResolveUrl("_content/Microsoft.FluentUI.AspNetCore.Components/css/reboot.css").AbsolutePath" />
+    <link rel="stylesheet" href="@Site.ResolveUrl("_content/Microsoft.FluentUI.AspNetCore.Components/Microsoft.FluentUI.AspNetCore.Components.bundle.scp.css").AbsolutePath" />
+    <link rel="stylesheet" href="@Assets["css/app.css"]" />
+</HeadContent>
+
+@code {
+    [Parameter, EditorRequired] public string Title { get; set; } = string.Empty;
+    [Parameter] public string? Description { get; set; }
+}

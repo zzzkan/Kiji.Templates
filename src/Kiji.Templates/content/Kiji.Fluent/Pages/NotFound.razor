@@ -1,0 +1,5 @@
+@page "/not-found/"
+@inject SiteInfo Site
+
+<PageHead Title="Not Found" Description="The page you are looking for does not exist." />
+<section><h1>Page not found.</h1><a href="@Site.ResolveUrl("").AbsolutePath">Back to overview</a></section>

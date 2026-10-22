@@ -1,0 +1,27 @@
+@inherits LayoutComponentBase
+@inject SiteInfo Site
+@inject PageInfo Page
+
+<a class="skip-link" href="#main-content">Skip to content</a>
+<header class="site-header">
+    <FluentStack Wrap="true" HorizontalGap="16" VerticalGap="8" HorizontalAlignment="HorizontalAlignment.SpaceBetween" VerticalAlignment="VerticalAlignment.Center">
+        <a class="brand" href="@Site.ResolveUrl("").AbsolutePath"><span aria-hidden="true">🏢</span> @Site.Name</a>
+        <nav aria-label="Main navigation">
+            <FluentStack Wrap="true" HorizontalGap="16" VerticalGap="8">
+                <a href="@Site.ResolveUrl("").AbsolutePath" aria-current="@(Page.Url.AbsolutePath == Site.ResolveUrl("").AbsolutePath ? "page" : null)">Overview</a>
+                <a href="@Site.ResolveUrl("").AbsolutePath#services">Capabilities</a>
+                <a href="@Site.ResolveUrl("").AbsolutePath#resources">Resources</a>
+                <a href="@Site.ResolveUrl("").AbsolutePath#plan">Plan your project</a>
+            </FluentStack>
+        </nav>
+    </FluentStack>
+</header>
+<main id="main-content" tabindex="-1">@Body</main>
+<footer class="site-footer">
+    <FluentStack Wrap="true" HorizontalAlignment="HorizontalAlignment.SpaceBetween">
+        <span>@Site.Name</span>
+        <a href="@Site.ResolveUrl("").AbsolutePath#plan">Plan your project</a>
+    </FluentStack>
+</footer>
+<script type="module" src="@Assets["js/fluent.js"]"
+        data-fluent-module="@Site.ResolveUrl("_content/Microsoft.FluentUI.AspNetCore.Components/Microsoft.FluentUI.AspNetCore.Components.lib.module.js").AbsolutePath"></script>

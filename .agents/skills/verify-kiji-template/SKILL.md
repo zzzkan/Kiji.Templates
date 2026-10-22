@@ -38,7 +38,7 @@ from the repository root. Tests never repack. For package-only checks, append
 `--filter-class '*PackageTests'`; filtered tests prepare their own prerequisites.
 
 [Tests](../../../src/Kiji.Templates.Tests/) cover package contents, generation and
-publishing at root and subpaths, Interactive/Blog browser behavior, and Blog authoring.
+publishing at root and subpaths, Interactive/Blog/Fluent browser behavior, and Blog authoring.
 Minimal's root case keeps the ordinary publish path. Other cases and demos select
 the current runtime and import `.github/scripts/verification.targets` through command
 arguments to omit SkiaSharp's native PDBs. These settings never modify generated
@@ -47,6 +47,9 @@ project files or packaged templates. Explicit restore uses the same settings bef
 native library is copied. Keep the ordinary smoke case when changing these options.
 Tests and demos isolate registrations with `--debug:custom-hive`; recheck
 installation and generation after SDK upgrades.
+
+Tests remove generated `bin` and `obj` even on failure. Diagnostics stay under
+`TestResults/`; automatic cleanup keeps five recent inactive runs and reports.
 
 ## GitHub Pages demos
 
@@ -61,12 +64,17 @@ when verifying one. Run from the repository root; relative paths resolve from th
 current directory. Pass `-BaseUrl` without a trailing slash. Each demo uses its
 template's short name as the directory, such as `kiji-minimal/`.
 The builder stops on command failure; only Pages enforces a 15-minute timeout.
+The builder removes `bin` and `obj` even on failure. Stop previews before replacing
+old demos in `artifacts/demos` and `dist`; do not archive copies in `TestResults/`.
 
 ## Diagnostics and targeted checks
 
 - Review inline ARIA expectations in `InteractiveTests.cs` and `BlogTests.cs`
   deliberately. For layout changes, inspect desktop/mobile screenshots, including
   Blog home, post, and dark post views; ARIA does not check styling.
+- For Fluent changes, inspect the home page at desktop/mobile widths and in dark
+  colors. `FluentTests.cs` checks RCL assets, filtering, keyboard activation, and
+  subpath links with and without JavaScript. Keep the site free of Blazor runtime requests.
 - Add checks only for new behavior. Verify directory installation after exclusion
   changes; run `dotnet watch` or `dotnet clean` in a generated project for preview
   or clean changes.

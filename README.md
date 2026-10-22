@@ -13,6 +13,7 @@ dotnet new install Kiji.Templates
 | [Kiji Minimal](#kiji-minimal)         | `kiji-minimal`     | A minimal site with a single home page.                                                                   |
 | [Kiji Blog](#kiji-blog)               | `kiji-blog`        | A Markdown blog with posts, general pages, Prism syntax highlighting, and RSS, built with Razor and Kiji. |
 | [Kiji Interactive](#kiji-interactive) | `kiji-interactive` | Familiar Blazor template pages with JavaScript interactions.                                              |
+| [Kiji Fluent](#kiji-fluent)           | `kiji-fluent`      | A corporate site with Fluent UI components, services, searchable resources, and light/dark colors.       |
 
 ## Kiji Minimal
 
@@ -90,3 +91,27 @@ dotnet new kiji-interactive -o MySite`
 | `--site-description` | Site description. | `Familiar Blazor template pages with JavaScript interactions.` |
 | `--site-language` | Language tag, such as `en` or `ja`. | `en` |
 | `--site-author` | Site author. | `zzzkan` |
+
+## Kiji Fluent
+
+A corporate website with [Fluent UI Blazor](https://github.com/microsoft/fluentui-blazor),
+searchable resources, and responsive light/dark layouts.
+
+```pwsh
+dotnet new kiji-fluent -o MyCompany `
+  --base-url https://example.org/ `
+  --site-name "Your Company"
+cd MyCompany
+dotnet watch
+```
+
+| Parameter | Description | Default |
+| --- | --- | --- |
+| `--base-url` | Public URL, including any deployment subpath. | `https://example.com/` |
+| `--site-name` | Site display name. | `Kiji Fluent` |
+| `--site-description` | Site description. | `A corporate website with Fluent UI components and a searchable resource library.` |
+| `--site-language` | Language tag, such as `en` or `ja`. | `en` |
+| `--site-author` | Site author. | `zzzkan` |
+
+Run `dotnet publish -c Release` and upload `dist/` to a static host.
+See the generated README for customization.

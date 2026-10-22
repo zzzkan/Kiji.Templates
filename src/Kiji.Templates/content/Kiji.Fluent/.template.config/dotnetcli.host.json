@@ -1,0 +1,14 @@
+{
+  "$schema": "http://json.schemastore.org/dotnetcli.host",
+  "symbolInfo": {
+    "baseUrl": { "longName": "base-url", "shortName": "" },
+    "siteName": { "longName": "site-name", "shortName": "" },
+    "description": { "longName": "site-description", "shortName": "" },
+    "language": { "longName": "site-language", "shortName": "" },
+    "author": { "longName": "site-author", "shortName": "" },
+    "skipRestore": {
+      "longName": "no-restore",
+      "shortName": ""
+    }
+  }
+}
