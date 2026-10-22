@@ -26,20 +26,6 @@ public abstract class PublishedSiteTest(TemplateFixture fixture) : PageTest
         return Task.FromResult<BrowserTypeLaunchOptions?>(options);
     }
 
-    public override async ValueTask DisposeAsync()
-    {
-        var cleanupSucceeded = false;
-        try
-        {
-            await base.DisposeAsync();
-            cleanupSucceeded = true;
-        }
-        finally
-        {
-            fixture.RecordTestResult(cleanupSucceeded);
-        }
-    }
-
     protected async Task VerifySite(string template, bool subpath,
         Func<string, string, Task> verify)
     {
