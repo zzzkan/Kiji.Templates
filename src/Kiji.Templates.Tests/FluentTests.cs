@@ -11,6 +11,39 @@ public sealed class FluentTests(TemplateFixture fixture) : PublishedSiteTest(fix
         ColorScheme = ColorScheme.Light,
     };
 
+    [Theory]
+    [InlineData(ColorScheme.Light)]
+    [InlineData(ColorScheme.Dark)]
+    public Task FluentInitialRenderWaitsForStyles(ColorScheme colorScheme) => VerifySite("fluent", true, async (baseUrl, diagnostics) =>
+    {
+        await Page.EmulateMediaAsync(new() { ColorScheme = colorScheme });
+        var requested = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        var release = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        await Page.RouteAsync("**/Microsoft.FluentUI.AspNetCore.Components.lib.module.js", async route =>
+        {
+            requested.TrySetResult();
+            await release.Task;
+            await route.ContinueAsync();
+        });
+        var navigation = Page.GotoAsync(baseUrl);
+        try
+        {
+            await requested.Task.WaitAsync(TimeSpan.FromSeconds(10));
+            // Keep the library pending long enough for an unstyled frame to paint.
+            await Task.Delay(300);
+            Assert.Empty(await Page.EvaluateAsync<string[]>("performance.getEntriesByType('paint').map(entry => entry.name)"));
+        }
+        finally
+        {
+            release.TrySetResult();
+            await navigation;
+        }
+
+        await Expect(Page.Locator("body")).ToHaveCSSAsync("font-size", "14px");
+        Assert.True(await Page.EvaluateAsync<bool>("!!customElements.get('fluent-button')"));
+        await Page.ScreenshotAsync(new() { Path = Path.Combine(diagnostics, $"initial-{colorScheme}.png"), FullPage = true });
+    });
+
     [Fact]
     public Task PublishedFluentWorks() => VerifySite("fluent", true, async (baseUrl, diagnostics) =>
     {
