@@ -59,7 +59,6 @@ foreach ($template in $templates) {
             --base-url "$BaseUrl/$name/" --no-restore --debug:custom-hive $hive
         $siteOutput = Join-Path $output $name
         dotnet publish (Join-Path $project "$($template.sourceName).csproj") -c Release -o $siteOutput `
-            -p:UseCurrentRuntimeIdentifier=true -p:SelfContained=false `
             "-p:CustomAfterMicrosoftCommonTargets=$(Join-Path $PSScriptRoot 'verification.targets')"
         if (!(Test-Path -LiteralPath (Join-Path $siteOutput 'index.html') -PathType Leaf)) {
             throw "No index.html published for $name."

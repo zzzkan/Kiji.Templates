@@ -96,23 +96,17 @@ public sealed class TemplateFixture : IAsyncLifetime
     {
         var projectFile = Path.Combine(site.Project, $"{site.Name}.csproj");
         string[] buildOptions = site.OptimizeBuild
-            ? ["-p:UseCurrentRuntimeIdentifier=true", "-p:SelfContained=false",
-                $"-p:CustomAfterMicrosoftCommonTargets={Path.Combine(Repository, ".github", "scripts", "verification.targets")}"]
+            ? [$"-p:CustomAfterMicrosoftCommonTargets={Path.Combine(Repository, ".github", "scripts", "verification.targets")}"]
             : [];
-        // dotnet new's automatic restore has no RID. Prepare the same RID that
-        // publish will use before exercising --no-restore, without editing the project.
-        if (noRestore && site.OptimizeBuild)
-            await RunDotnet(["restore", projectFile, .. buildOptions]);
         string[] options = noRestore ? ["--no-restore"] : [];
         await RunDotnet(["publish", projectFile, "-c", "Release", "-o", site.Output, .. buildOptions, .. options]);
         Assert.False(string.IsNullOrWhiteSpace(await File.ReadAllTextAsync(Path.Combine(site.Output, "index.html"))));
+        var nativeFiles = Directory.GetFiles(Path.Combine(site.Project, "bin"), "libSkiaSharp.*", SearchOption.AllDirectories);
+        var nativeLibrary = Assert.Single(nativeFiles, file => Path.GetExtension(file) is ".dll" or ".dylib" or ".so");
+        Assert.Equal(OperatingSystem.IsWindows() ? "libSkiaSharp.dll"
+            : OperatingSystem.IsMacOS() ? "libSkiaSharp.dylib" : "libSkiaSharp.so", Path.GetFileName(nativeLibrary));
         if (site.OptimizeBuild)
-        {
-            var nativeFiles = Directory.GetFiles(Path.Combine(site.Project, "bin"), "libSkiaSharp.*", SearchOption.AllDirectories);
-            var nativeLibrary = Assert.Single(nativeFiles);
-            Assert.Equal(OperatingSystem.IsWindows() ? "libSkiaSharp.dll"
-                : OperatingSystem.IsMacOS() ? "libSkiaSharp.dylib" : "libSkiaSharp.so", Path.GetFileName(nativeLibrary));
-        }
+            Assert.Single(nativeFiles);
     }
 
     private async Task RunDotnet(params string[] arguments)
