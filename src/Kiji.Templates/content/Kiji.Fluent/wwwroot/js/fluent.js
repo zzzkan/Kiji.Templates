@@ -1,4 +1,5 @@
 // Kiji's static pages initialize Fluent without starting Blazor.
-const script = document.querySelector('script[data-fluent-module]');
-const { beforeStart } = await import(script.dataset.fluentModule);
+// A static import keeps the render-blocking module pending until Fluent is ready.
+// Resolve relative to this asset so sites hosted under a subpath also work.
+import { beforeStart } from '../_content/Microsoft.FluentUI.AspNetCore.Components/Microsoft.FluentUI.AspNetCore.Components.lib.module.js';
 beforeStart({});
