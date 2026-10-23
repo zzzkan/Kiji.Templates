@@ -39,12 +39,14 @@ from the repository root. Tests never repack. For package-only checks, append
 
 [Tests](../../../src/Kiji.Templates.Tests/) cover package contents, generation and
 publishing at root and subpaths, Interactive/Blog/Fluent browser behavior, and Blog authoring.
-Minimal's root case keeps the ordinary publish path. Other cases and demos select
-the current runtime and import `.github/scripts/verification.targets` through command
-arguments to omit SkiaSharp's native PDBs. These settings never modify generated
-project files or packaged templates. Explicit restore uses the same settings before
-`--no-restore` publishing; optimized builds check that only the host's SkiaSharp
-native library is copied. Keep the ordinary smoke case when changing these options.
+All templates select the current runtime with `UseCurrentRuntimeIdentifier`.
+Minimal's root case keeps the ordinary publish path. Other cases and demos import
+`.github/scripts/verification.targets` through command arguments to omit SkiaSharp's
+native PDBs without modifying generated project files or packaged templates.
+Root cases publish with `--no-restore` after `dotnet new`'s automatic restore;
+subpath cases restore during publish. All builds check that only the host's
+SkiaSharp native library is copied; optimized builds also check that native PDBs
+are omitted. Keep the ordinary smoke case when changing these options.
 Tests and demos isolate registrations with `--debug:custom-hive`; recheck
 installation and generation after SDK upgrades.
 

@@ -9,15 +9,13 @@ cd MySite
 dotnet watch
 ```
 
-Open <http://localhost:8080>. Changes rebuild the preview; press `Ctrl+C` to stop.
-
-| Parameter | Description | Default |
-| --- | --- | --- |
-| `--base-url` | Public URL, including any deployment subpath. | `https://example.com/` |
-| `--site-name` | Site display name. | `Kiji Fluent` |
-| `--site-description` | Site description. | `A corporate website with Fluent UI components and a searchable resource library.` |
-| `--site-language` | Language tag, such as `en` or `ja`. | `en` |
-| `--site-author` | Site author. | `zzzkan` |
+| Parameter            | Description                                   | Default                                                                            |
+| -------------------- | --------------------------------------------- | ---------------------------------------------------------------------------------- |
+| `--base-url`         | Public URL, including any deployment subpath. | `https://example.com/`                                                             |
+| `--site-name`        | Site display name.                            | `Kiji Fluent`                                                                      |
+| `--site-description` | Site description.                             | `A corporate website with Fluent UI components and a searchable resource library.` |
+| `--site-language`    | Language tag, such as `en` or `ja`.           | `en`                                                                               |
+| `--site-author`      | Site author.                                  | `zzzkan`                                                                           |
 
 Edit these values later in `Program.cs`. The language tag sets document metadata;
 translate the page text separately.
