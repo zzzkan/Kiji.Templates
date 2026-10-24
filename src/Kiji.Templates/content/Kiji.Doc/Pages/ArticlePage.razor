@@ -1,0 +1,24 @@
+@page "/docs/{Slug}/"
+@inject ContentDictionary<Article> Articles
+
+@if (_article is not null)
+{
+    <PageHead Title="@_article.Title" Description="@_article.Description" />
+    <article>
+        <h1>@_article.Title</h1>
+        <div class="doc-content">@((MarkupString)_html)</div>
+    </article>
+}
+
+@code {
+    [Parameter] public string Slug { get; set; } = string.Empty;
+    [Parameter] public string ContentKey { get; set; } = string.Empty;
+    private Article? _article;
+    private string _html = string.Empty;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        _article = Articles[ContentKey];
+        _html = await _article.Content.RenderAsync();
+    }
+}

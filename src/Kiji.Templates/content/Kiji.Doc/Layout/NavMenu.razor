@@ -1,0 +1,12 @@
+@inject SiteInfo Site
+@inject PageInfo Page
+@inject ContentDictionary<Article> Articles
+
+<p class="nav-title">Documentation</p>
+<ul>
+    @foreach (var article in Articles.Values.OrderBy(article => article.Order).ThenBy(article => article.Slug, StringComparer.Ordinal))
+    {
+        var url = Site.ResolveUrl(article.RelativePath).AbsolutePath;
+        <li><a href="@url" aria-current="@(Page.Url.AbsolutePath == url ? "page" : null)">@article.Title</a></li>
+    }
+</ul>

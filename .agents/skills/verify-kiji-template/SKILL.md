@@ -38,7 +38,7 @@ from the repository root. Tests never repack. For package-only checks, append
 `--filter-class '*PackageTests'`; filtered tests prepare their own prerequisites.
 
 [Tests](../../../src/Kiji.Templates.Tests/) cover package contents, generation and
-publishing at root and subpaths, Interactive/Blog/Fluent browser behavior, and Blog authoring.
+publishing at root and subpaths, Interactive/Blog/Doc/Fluent browser behavior, and Blog/Doc authoring.
 All templates select the current runtime with `UseCurrentRuntimeIdentifier`.
 Minimal's root case keeps the ordinary publish path. Other cases and demos import
 `.github/scripts/verification.targets` through command arguments to omit SkiaSharp's
@@ -77,6 +77,11 @@ old demos in `artifacts/demos` and `dist`; do not archive copies in `TestResults
 - For Fluent changes, inspect the home page at desktop/mobile widths and in dark
   colors. `FluentTests.cs` checks RCL assets, filtering, keyboard activation, and
   subpath links with and without JavaScript. Keep the site free of Blazor runtime requests.
+- For Doc changes, inspect the home page and article at desktop/mobile widths and
+  in dark colors. `DocTests.cs` checks ordered navigation, active links, mobile
+  keyboard navigation without JavaScript, subpath links, and Prism syntax
+  highlighting. `DocAuthoringTests.cs` checks discovery, ordering, sitemap entries,
+  and diagnostics for missing titles or duplicate routes.
 - Add checks only for new behavior. Verify directory installation after exclusion
   changes; run `dotnet watch` or `dotnet clean` in a generated project for preview
   or clean changes.

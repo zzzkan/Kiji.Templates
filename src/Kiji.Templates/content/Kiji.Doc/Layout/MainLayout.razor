@@ -1,0 +1,32 @@
+@inherits LayoutComponentBase
+@inject SiteInfo Site
+
+<a class="skip-link" href="#main-content">Skip to content</a>
+<header class="site-header">
+    <input class="nav-toggle" type="checkbox" id="documentation-menu" aria-controls="mobile-documentation" />
+    <div class="bar">
+        <div class="brand">
+            <label class="nav-toggle-label" for="documentation-menu">
+                <span class="hamburger" aria-hidden="true"></span>
+                <span class="visually-hidden">Toggle documentation menu</span>
+            </label>
+            <a class="site-title" href="@Site.ResolveUrl("").AbsolutePath"><span aria-hidden="true">📖</span> @Site.Name</a>
+        </div>
+        <nav aria-label="Main">
+            <a href="@Site.ResolveUrl("").AbsolutePath">Home</a>
+            <a href="https://kiji-docs.zzzkan.workers.dev/">Kiji</a>
+        </nav>
+    </div>
+    <nav class="mobile-nav" id="mobile-documentation" aria-label="Documentation">
+        <NavMenu />
+    </nav>
+</header>
+
+<div class="shell">
+    <nav class="side-nav" aria-label="Documentation"><NavMenu /></nav>
+    <main id="main-content" tabindex="-1">@Body</main>
+</div>
+
+<footer class="site-footer">
+    <p>&copy; @DateTime.UtcNow.Year @Site.Author, built with <a href="https://github.com/zzzkan/kiji/">Kiji</a>.</p>
+</footer>

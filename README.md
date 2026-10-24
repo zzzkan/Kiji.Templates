@@ -14,6 +14,7 @@ dotnet new install Kiji.Templates
 | ------------------------------------- | ------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------- |
 | [Kiji Minimal](#kiji-minimal)         | `kiji-minimal`     | A minimal site with a single home page.                                                                                                             |
 | [Kiji Blog](#kiji-blog)               | `kiji-blog`        | A Markdown blog with posts, general pages, Prism syntax highlighting, and RSS, built with Razor and Kiji.                                           |
+| [Kiji Doc](#kiji-doc)                 | `kiji-doc`         | Markdown documentation with ordered navigation, syntax highlighting, and responsive light/dark layouts. |
 | [Kiji Interactive](#kiji-interactive) | `kiji-interactive` | Familiar Blazor WASM template pages with JavaScript interactions.                                                                                   |
 | [Kiji Fluent](#kiji-fluent)           | `kiji-fluent`      | A corporate website with [Fluent UI Blazor](https://github.com/microsoft/fluentui-blazor), searchable resources, and responsive light/dark layouts. |
 
@@ -67,6 +68,37 @@ dotnet new kiji-blog -o MyBlog`
 | `--site-description` | Site description.                             | `A Markdown blog with RSS and light/dark colors.` |
 | `--site-language`    | Language tag, such as `en` or `ja`.           | `en`                                              |
 | `--site-author`      | Site author.                                  | `zzzkan`                                          |
+
+## Kiji Doc
+
+[Demo](https://zzzkan.github.io/Kiji.Templates/kiji-doc/)
+
+A documentation site inspired by the [Kiji documentation](https://kiji-docs.zzzkan.workers.dev/),
+with Markdown articles, an automatically ordered sidebar and home page, a mobile
+menu that works without JavaScript, Prism syntax highlighting via CDN,
+light/dark colors, and a sitemap.
+
+```pwsh
+dotnet new kiji-doc -o MyDocs `
+  --base-url https://example.org/handbook/ `
+  --site-name "My Docs" `
+  --site-description "Documentation for my project." `
+  --site-language en `
+  --site-author "Your Name"
+```
+
+| Parameter | Description | Default |
+| --- | --- | --- |
+| `--base-url` | Public URL, including any deployment subpath. | `https://example.com/` |
+| `--site-name` | Site display name. | `Kiji Doc` |
+| `--site-description` | Site description. | `Documentation for your project, built with Markdown and Razor.` |
+| `--site-language` | Language tag, such as `en` or `ja`. | `en` |
+| `--site-author` | Site author. | `zzzkan` |
+
+Add articles as `content/your-topic/index.md` or `content/your-topic.md`, with
+`title`, `description`, and `order` in YAML front matter. Articles publish at
+`docs/your-topic/`; navigation sorts by `order`, then slug. See the generated
+README and sample guides for authoring and deployment instructions.
 
 ## Kiji Interactive
 
