@@ -8,7 +8,7 @@ order: 20
 
 Create `content/your-topic/index.md`, or use a single file such as
 `content/your-topic.md`. Both publish at `docs/your-topic/`.
-Use unique names containing lowercase ASCII letters, digits, and hyphens.
+Use unique names made of lowercase ASCII letters, digits, and hyphens.
 
 ```yaml
 ---
@@ -34,9 +34,9 @@ Lower `order` values appear first; ties sort by the URL slug.
 
 ## Link to other pages
 
-Use relative links such as `[Getting started](../getting-started/)` between
-articles. Include the trailing slash. These links also work when the site is
-published below a subpath.
+Link between articles with relative links such as
+`[Getting started](../getting-started/)`, including the trailing slash. Relative
+links keep working when the site is published under a subpath.
 
 ## Show code
 
