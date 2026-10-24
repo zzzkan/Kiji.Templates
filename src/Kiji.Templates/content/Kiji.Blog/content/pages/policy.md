@@ -6,11 +6,11 @@ description: Privacy, links, and reuse of the writing on this site.
 ## Privacy
 
 This site serves static pages. It does not use analytics, advertising, cookies,
-or contact forms. The hosting provider may keep access logs, such as IP addresses
-and request times, to operate the service.
+or contact forms. The hosting provider may keep access logs with details such as
+IP addresses and request times to operate the service.
 
-Syntax highlighting scripts, language definitions, and styles are loaded from
-jsDelivr. Your browser contacts that CDN when you visit a page.
+Pages load syntax highlighting scripts, language definitions, and styles from
+jsDelivr, so your browser contacts that CDN when you visit a page.
 
 ## External links
 

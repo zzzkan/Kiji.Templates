@@ -18,8 +18,8 @@ dotnet watch
 | `--site-language`    | Language tag, such as `en` or `ja`.           | `en`                                                                               |
 | `--site-author`      | Site author.                                  | `zzzkan`                                                                           |
 
-Edit these values later in `Program.cs`. The language tag sets document metadata;
-translate the page text separately.
+You can change these values later in `Program.cs`. The language tag only sets
+document metadata, so translate the page text yourself.
 
 ## Make it yours
 
@@ -39,7 +39,8 @@ Set your public `BaseUrl` in `Program.cs`, including any subpath such as
 dotnet publish -c Release
 ```
 
-Upload the contents of `dist/` to your static host. No .NET server is needed.
+Upload the contents of `dist/` to your static host. The site does not need a
+.NET server.
 
 See the [Kiji documentation](https://kiji-docs.zzzkan.workers.dev/) and
 [Fluent UI Blazor components](https://www.fluentui-blazor.net/) for more ideas.

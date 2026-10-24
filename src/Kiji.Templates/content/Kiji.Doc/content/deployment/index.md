@@ -19,12 +19,14 @@ dotnet publish -c Release
 ```
 
 Upload the contents of `dist/` to your static host. The site runs as ordinary
-HTML, CSS, and JavaScript; it does not require a .NET server or Blazor runtime.
+HTML, CSS, and JavaScript and does not require a .NET server or the Blazor
+runtime.
 
 ## Configure your host
 
-Serve directory URLs from their `index.html` files. Configure your host to use
-`404.html` for missing pages. Submit `sitemap.xml` to search engines when ready.
+Configure your host to serve each directory URL from its `index.html` file and
+to use `404.html` for missing pages. When the site is ready, submit
+`sitemap.xml` to search engines.
 
 ## Check your documentation
 
@@ -33,5 +35,5 @@ Serve directory URLs from their `index.html` files. Configure your host to use
 - Check code examples in light and dark mode.
 - Confirm that the deployed URL matches `BaseUrl`.
 
-The content and navigation work without JavaScript. Code coloring requires
+The content and navigation work without JavaScript. Syntax highlighting requires
 JavaScript and access to the Prism CDN.
