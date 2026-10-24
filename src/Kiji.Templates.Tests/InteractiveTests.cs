@@ -90,7 +90,7 @@ public class InteractiveTests(TemplateFixture fixture) : PublishedSiteTest(fixtu
 
         await Page.SetViewportSizeAsync(390, 844);
         await Page.GotoAsync(baseUrl);
-        var toggle = Page.GetByRole(AriaRole.Button, new() { Name = "Navigation menu" });
+        var toggle = Page.GetByRole(AriaRole.Button, new() { Name = "Navigation menu", IncludeHidden = true });
         await Expect(navigation).ToBeHiddenAsync();
         await Expect(toggle).ToHaveAttributeAsync("aria-expanded", "false");
         await Page.ScreenshotAsync(new() { Path = Path.Combine(diagnostics, "mobile-collapsed.png"), FullPage = true });
@@ -101,11 +101,15 @@ public class InteractiveTests(TemplateFixture fixture) : PublishedSiteTest(fixtu
         await toggle.ClickAsync();
         await Expect(navigation).ToBeHiddenAsync();
 
+        // The menu script receives width changes on the next frame. Wait for each one,
+        // or a late change can collapse the menu again after the key press.
         await Page.SetViewportSizeAsync(641, 844);
         await Expect(navigation).ToBeVisibleAsync();
         await Expect(toggle).ToBeHiddenAsync();
+        await Expect(toggle).ToHaveAttributeAsync("aria-expanded", "true");
         await Page.SetViewportSizeAsync(640, 844);
         await Expect(navigation).ToBeHiddenAsync();
+        await Expect(toggle).ToHaveAttributeAsync("aria-expanded", "false");
         await toggle.FocusAsync();
         await Page.Keyboard.PressAsync("Space");
         await Expect(navigation).ToBeVisibleAsync();
