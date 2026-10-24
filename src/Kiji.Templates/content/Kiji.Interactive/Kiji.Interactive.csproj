@@ -7,6 +7,6 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Kiji" Version="0.4.0" />
+    <PackageReference Include="Kiji" Version="0.5.0" />
   </ItemGroup>
 </Project>

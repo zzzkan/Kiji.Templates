@@ -14,7 +14,6 @@ app.Info = new SiteInfo
 
 app.UseDefaultLayout<MainLayout>();
 
-app.AddPages();
 app.AddNotFoundPage<NotFound>();
 
 return await app.RunAsync();

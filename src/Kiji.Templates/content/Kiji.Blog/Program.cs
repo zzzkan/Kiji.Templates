@@ -23,10 +23,9 @@ app.UseMarkdownContent<PageFrontMatter, SitePage>(SitePage.Create,
     options => options.Directory = "content/pages");
 app.UseDefaultLayout<MainLayout>();
 
-app.AddPages();
-app.AddPages<Post>(services => services.GetRequiredService<ContentDictionary<BlogPost>>()
+app.AddPageParameters<Post>(services => services.GetRequiredService<ContentDictionary<BlogPost>>()
     .Select(post => new { Slug = post.Value.Slug, ContentKey = post.Key }));
-app.AddPages<Page>(services => services.GetRequiredService<ContentDictionary<SitePage>>()
+app.AddPageParameters<Page>(services => services.GetRequiredService<ContentDictionary<SitePage>>()
     .Select(page => new { Slug = page.Value.Slug, ContentKey = page.Key }));
 app.AddNotFoundPage<NotFound>();
 app.AddSitemap();

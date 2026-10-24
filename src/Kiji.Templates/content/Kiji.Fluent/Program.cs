@@ -17,7 +17,6 @@ app.UseServices(services => services.AddFluentUIComponents());
 
 app.UseDefaultLayout<MainLayout>();
 
-app.AddPages();
 app.AddNotFoundPage<NotFound>();
 
 return await app.RunAsync();
