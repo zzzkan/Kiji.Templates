@@ -1,6 +1,8 @@
 # Kiji.Templates
 
+[![CI](https://github.com/zzzkan/Kiji.Templates/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/zzzkan/Kiji.Templates/actions/workflows/ci.yml)
 [![NuGet](https://img.shields.io/nuget/v/Kiji.Templates.svg)](https://www.nuget.org/packages/Kiji.Templates)
+[![License](https://img.shields.io/github/license/zzzkan/Kiji.Templates)](https://github.com/zzzkan/Kiji.Templates/blob/main/LICENSE)
 
 Static website templates built with [Kiji](https://github.com/zzzkan/kiji).
 
