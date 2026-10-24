@@ -1,7 +1,8 @@
 # Kiji.Fluent
 
-A corporate website with [Fluent UI Blazor](https://github.com/microsoft/fluentui-blazor),
-searchable resources, and light/dark colors. Requires the .NET 10 SDK.
+A corporate website with [Fluent UI Blazor](https://github.com/microsoft/fluentui-blazor), searchable resources, and responsive light/dark layouts.
+
+Create a site:
 
 ```sh
 dotnet new kiji-fluent -o MySite --base-url https://example.org/ --site-name "Your Company"
