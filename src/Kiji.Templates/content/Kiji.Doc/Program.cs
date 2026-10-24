@@ -18,8 +18,7 @@ app.Info = new SiteInfo
 
 app.UseMarkdownContent<FrontMatter, Article>(Article.Create);
 app.UseDefaultLayout<MainLayout>();
-app.AddPages();
-app.AddPages<ArticlePage>(services => services.GetRequiredService<ContentDictionary<Article>>()
+app.AddPageParameters<ArticlePage>(services => services.GetRequiredService<ContentDictionary<Article>>()
     .Select(article => new { article.Value.Slug, ContentKey = article.Key }));
 app.AddNotFoundPage<NotFoundPage>();
 app.AddSitemap();

@@ -10,6 +10,4 @@ app.Info = new SiteInfo
     Author = "__KIJI_SITE_AUTHOR__",
 };
 
-app.AddPages();
-
 return await app.RunAsync();
