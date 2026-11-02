@@ -7,8 +7,8 @@ using Kiji.Markdown;
 using Kiji.Sitemaps;
 using Microsoft.Extensions.DependencyInjection;
 
-var app = StaticSite.Create(args);
-app.Info = new SiteInfo
+var builder = StaticSite.CreateBuilder(args);
+builder.SiteInfo = new SiteInfo
 {
     BaseUrl = new Uri("__KIJI_BASE_URL__"),
     Name = "__KIJI_SITE_NAME__",
@@ -17,22 +17,24 @@ app.Info = new SiteInfo
     Author = "__KIJI_SITE_AUTHOR__",
 };
 
-app.UseMarkdownContent<PostFrontMatter, BlogPost>(BlogPost.Create,
+builder.AddMarkdownContent<PostFrontMatter, BlogPost>(BlogPost.Create,
     options => options.Directory = "content/posts");
-app.UseMarkdownContent<PageFrontMatter, SitePage>(SitePage.Create,
+builder.AddMarkdownContent<PageFrontMatter, SitePage>(SitePage.Create,
     options => options.Directory = "content/pages");
-app.UseDefaultLayout<MainLayout>();
 
-app.AddPageParameters<Post>(services => services.GetRequiredService<ContentDictionary<BlogPost>>()
-    .Select(post => new { Slug = post.Value.Slug, ContentKey = post.Key }));
-app.AddPageParameters<Page>(services => services.GetRequiredService<ContentDictionary<SitePage>>()
-    .Select(page => new { Slug = page.Value.Slug, ContentKey = page.Key }));
-app.AddNotFoundPage<NotFound>();
-app.AddSitemap();
+builder.UseNotFoundPage<NotFound>();
+builder.UseDefaultLayout<MainLayout>();
 
-app.AddRssFeed(services => services.GetRequiredService<ContentDictionary<BlogPost>>().Values
-    .OrderByDescending(post => post.Date)
+builder.AddPageParameters<Post>(services => services.GetRequiredService<ContentCollection<BlogPost>>()
+    .Select(post => new { post.Slug, PostContent = post }));
+builder.AddPageParameters<Page>(services => services.GetRequiredService<ContentCollection<SitePage>>()
+    .Select(page => new { page.Slug, PageContent = page }));
+
+builder.AddRssFeed(services => services.GetRequiredService<ContentCollection<BlogPost>>()
+    .OrderByDescending(post => post.Content.FrontMatter.Date)
     .ThenBy(post => post.Slug, StringComparer.Ordinal)
-    .Select(post => new FeedItem(post.Title, post.Description, post.Date, post.RelativePath)));
+    .Select(post => new FeedItem(post.Content.FrontMatter.Title, post.Content.FrontMatter.Description,
+        post.Content.FrontMatter.Date, $"posts/{Uri.EscapeDataString(post.Slug)}/")));
+builder.AddSitemap();
 
-return await app.RunAsync();
+return await builder.Build().RunAsync();

@@ -2,8 +2,8 @@ using Kiji;
 using Kiji.Interactive.Layout;
 using Kiji.Interactive.Pages;
 
-var app = StaticSite.Create(args);
-app.Info = new SiteInfo
+var builder = StaticSite.CreateBuilder(args);
+builder.SiteInfo = new SiteInfo
 {
     BaseUrl = new Uri("__KIJI_BASE_URL__"),
     Name = "__KIJI_SITE_NAME__",
@@ -12,8 +12,7 @@ app.Info = new SiteInfo
     Author = "__KIJI_SITE_AUTHOR__",
 };
 
-app.UseDefaultLayout<MainLayout>();
+builder.UseDefaultLayout<MainLayout>();
+builder.UseNotFoundPage<NotFound>();
 
-app.AddNotFoundPage<NotFound>();
-
-return await app.RunAsync();
+return await builder.Build().RunAsync();
