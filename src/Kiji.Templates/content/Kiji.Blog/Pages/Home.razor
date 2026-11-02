@@ -15,7 +15,7 @@
             var frontMatter = post.Content.FrontMatter;
             <li>
                 <time datetime="@frontMatter.Date.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)">@frontMatter.Date.ToString("dd MMM yyyy", CultureInfo.InvariantCulture)</time>
-                <a href="@Site.ResolveUrl(Post.PathFor(post.Slug)).AbsolutePath">@frontMatter.Title</a>
+                <a href="@Site.ResolveUrl($"posts/{Uri.EscapeDataString(post.Slug)}/").AbsolutePath">@frontMatter.Title</a>
             </li>
         }
     </ul>

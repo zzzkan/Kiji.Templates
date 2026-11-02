@@ -13,6 +13,4 @@
 @code {
     [Parameter] public string Slug { get; set; } = string.Empty;
     [Parameter] public BlogPost PostContent { get; set; } = null!;
-
-    public static string PathFor(string slug) => $"posts/{Uri.EscapeDataString(slug)}/";
 }

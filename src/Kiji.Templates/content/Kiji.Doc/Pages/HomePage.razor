@@ -12,7 +12,7 @@
     {
         var frontMatter = article.Content.FrontMatter;
         <article>
-            <h2><a href="@Site.ResolveUrl(ArticlePage.PathFor(article.Slug)).AbsolutePath">@frontMatter.Title</a></h2>
+            <h2><a href="@Site.ResolveUrl($"docs/{Uri.EscapeDataString(article.Slug)}/").AbsolutePath">@frontMatter.Title</a></h2>
             <p>@frontMatter.Description</p>
         </article>
     }
