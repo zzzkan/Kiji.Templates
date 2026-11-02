@@ -21,19 +21,20 @@ builder.AddMarkdownContent<PostFrontMatter, BlogPost>(BlogPost.Create,
     options => options.Directory = "content/posts");
 builder.AddMarkdownContent<PageFrontMatter, SitePage>(SitePage.Create,
     options => options.Directory = "content/pages");
+
+builder.UseNotFoundPage<NotFound>();
 builder.UseDefaultLayout<MainLayout>();
 
 builder.AddPageParameters<Post>(services => services.GetRequiredService<ContentCollection<BlogPost>>()
     .Select(post => new { post.Slug, PostContent = post }));
 builder.AddPageParameters<Page>(services => services.GetRequiredService<ContentCollection<SitePage>>()
     .Select(page => new { page.Slug, PageContent = page }));
-builder.UseNotFoundPage<NotFound>();
-builder.AddSitemap();
 
 builder.AddRssFeed(services => services.GetRequiredService<ContentCollection<BlogPost>>()
     .OrderByDescending(post => post.Content.FrontMatter.Date)
     .ThenBy(post => post.Slug, StringComparer.Ordinal)
     .Select(post => new FeedItem(post.Content.FrontMatter.Title, post.Content.FrontMatter.Description,
         post.Content.FrontMatter.Date, $"posts/{Uri.EscapeDataString(post.Slug)}/")));
+builder.AddSitemap();
 
 return await builder.Build().RunAsync();

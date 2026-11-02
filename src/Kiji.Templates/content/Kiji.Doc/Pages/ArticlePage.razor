@@ -1,10 +1,14 @@
 @page "/docs/{Slug}/"
-@{ var frontMatter = Article.Content.FrontMatter; }
+@{
+    var frontMatter = Article.Content.FrontMatter;
+}
 
 <PageHead Title="@frontMatter.Title" Description="@frontMatter.Description" />
 <article>
     <h1>@frontMatter.Title</h1>
-    <div class="doc-content"><MarkdownBody Content="Article.Content" /></div>
+    <div class="doc-content">
+        <MarkdownBody Content="Article.Content" />
+    </div>
 </article>
 
 @code {

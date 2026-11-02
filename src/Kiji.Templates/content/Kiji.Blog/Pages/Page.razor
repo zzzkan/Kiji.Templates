@@ -1,9 +1,13 @@
 @page "/{Slug}/"
-@{ var frontMatter = PageContent.Content.FrontMatter; }
+@{
+    var frontMatter = PageContent.Content.FrontMatter;
+}
 
 <PageHead Title="@frontMatter.Title" Description="@frontMatter.Description" />
 <h1>@frontMatter.Title</h1>
-<div class="prose"><MarkdownBody Content="PageContent.Content" /></div>
+<div class="prose">
+    <MarkdownBody Content="PageContent.Content" />
+</div>
 
 @code {
     [Parameter] public string Slug { get; set; } = string.Empty;

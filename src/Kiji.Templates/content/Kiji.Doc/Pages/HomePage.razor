@@ -8,11 +8,15 @@
     <p class="lede">@Site.Description</p>
 </div>
 <section class="pitch" aria-label="Documentation overview">
-    @foreach (var article in Articles.OrderBy(article => article.Content.FrontMatter.Order).ThenBy(article => article.Slug, StringComparer.Ordinal))
+    @foreach (var article in Articles.OrderBy(article => article.Content.FrontMatter.Order).ThenBy(article =>
+    article.Slug, StringComparer.Ordinal))
     {
         var frontMatter = article.Content.FrontMatter;
         <article>
-            <h2><a href="@Site.ResolveUrl($"docs/{Uri.EscapeDataString(article.Slug)}/").AbsolutePath">@frontMatter.Title</a></h2>
+            <h2>
+                <a
+                href="@Site.ResolveUrl($"docs/{Uri.EscapeDataString(article.Slug)}/").AbsolutePath">@frontMatter.Title</a>
+            </h2>
             <p>@frontMatter.Description</p>
         </article>
     }
