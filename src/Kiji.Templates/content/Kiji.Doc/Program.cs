@@ -6,8 +6,8 @@ using Kiji.Markdown;
 using Kiji.Sitemaps;
 using Microsoft.Extensions.DependencyInjection;
 
-var app = StaticSite.Create(args);
-app.Info = new SiteInfo
+var builder = StaticSite.CreateBuilder(args);
+builder.SiteInfo = new SiteInfo
 {
     BaseUrl = new Uri("__KIJI_BASE_URL__"),
     Name = "__KIJI_SITE_NAME__",
@@ -16,11 +16,11 @@ app.Info = new SiteInfo
     Author = "__KIJI_SITE_AUTHOR__",
 };
 
-app.UseMarkdownContent<FrontMatter, Article>(Article.Create);
-app.UseDefaultLayout<MainLayout>();
-app.AddPageParameters<ArticlePage>(services => services.GetRequiredService<ContentDictionary<Article>>()
-    .Select(article => new { article.Value.Slug, ContentKey = article.Key }));
-app.AddNotFoundPage<NotFoundPage>();
-app.AddSitemap();
+builder.AddMarkdownContent<FrontMatter, Article>(Article.Create);
+builder.UseDefaultLayout<MainLayout>();
+builder.AddPageParameters<ArticlePage>(services => services.GetRequiredService<ContentCollection<Article>>()
+    .Select(article => new { article.Slug, Article = article }));
+builder.UseNotFoundPage<NotFoundPage>();
+builder.AddSitemap();
 
-return await app.RunAsync();
+return await builder.Build().RunAsync();

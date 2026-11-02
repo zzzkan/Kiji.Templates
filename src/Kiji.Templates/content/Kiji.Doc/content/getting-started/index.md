@@ -24,7 +24,7 @@ Edit `Program.cs` to set your site's name, description, language, author, and pu
 URL. The home page and metadata use these values automatically.
 
 ```csharp
-app.Info = new SiteInfo
+builder.SiteInfo = new SiteInfo
 {
     Name = "Project handbook",
     Description = "Everything you need to get started.",

@@ -1,6 +1,6 @@
 @page "/"
 @inject SiteInfo Site
-@inject ContentDictionary<BlogPost> Posts
+@inject ContentCollection<BlogPost> Posts
 
 <PageHead Title="Home" />
 
@@ -10,7 +10,7 @@
 <section aria-labelledby="posts-heading">
     <h2 id="posts-heading">Posts</h2>
     <ul class="post-list">
-        @foreach (var post in Posts.Values.OrderByDescending(post => post.Date).ThenBy(post => post.Slug, StringComparer.Ordinal))
+        @foreach (var post in Posts.OrderByDescending(post => post.Date).ThenBy(post => post.Slug, StringComparer.Ordinal))
         {
             <li>
                 <time datetime="@post.Date.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)">@post.Date.ToString("dd MMM yyyy", CultureInfo.InvariantCulture)</time>
