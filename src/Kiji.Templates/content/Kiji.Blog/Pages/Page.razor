@@ -1,7 +1,8 @@
 @page "/{Slug}/"
+@{ var frontMatter = PageContent.Content.FrontMatter; }
 
-<PageHead Title="@PageContent.Title" Description="@PageContent.Description" />
-<h1>@PageContent.Title</h1>
+<PageHead Title="@frontMatter.Title" Description="@frontMatter.Description" />
+<h1>@frontMatter.Title</h1>
 <div class="prose"><MarkdownBody Content="PageContent.Content" /></div>
 
 @code {

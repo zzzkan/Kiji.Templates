@@ -18,9 +18,9 @@ builder.SiteInfo = new SiteInfo
 
 builder.AddMarkdownContent<FrontMatter, Article>(Article.Create);
 builder.UseDefaultLayout<MainLayout>();
+builder.UseNotFoundPage<NotFoundPage>();
 builder.AddPageParameters<ArticlePage>(services => services.GetRequiredService<ContentCollection<Article>>()
     .Select(article => new { article.Slug, Article = article }));
-builder.UseNotFoundPage<NotFoundPage>();
 builder.AddSitemap();
 
 return await builder.Build().RunAsync();

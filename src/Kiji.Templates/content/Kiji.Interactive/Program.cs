@@ -13,7 +13,6 @@ builder.SiteInfo = new SiteInfo
 };
 
 builder.UseDefaultLayout<MainLayout>();
-
 builder.UseNotFoundPage<NotFound>();
 
 return await builder.Build().RunAsync();

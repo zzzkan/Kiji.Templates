@@ -5,11 +5,6 @@ namespace Kiji.Doc.Models;
 
 public sealed record Article(string Slug, MarkdownContent<FrontMatter> Content)
 {
-    public string Title => Content.FrontMatter.Title;
-    public string Description => Content.FrontMatter.Description;
-    public int Order => Content.FrontMatter.Order;
-    public string RelativePath => $"docs/{Slug}/";
-
     public static Article Create(MarkdownContent<FrontMatter> content)
     {
         if (string.IsNullOrWhiteSpace(content.FrontMatter.Title))

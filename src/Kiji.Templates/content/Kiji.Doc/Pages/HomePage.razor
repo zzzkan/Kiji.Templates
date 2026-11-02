@@ -8,11 +8,12 @@
     <p class="lede">@Site.Description</p>
 </div>
 <section class="pitch" aria-label="Documentation overview">
-    @foreach (var article in Articles.OrderBy(article => article.Order).ThenBy(article => article.Slug, StringComparer.Ordinal))
+    @foreach (var article in Articles.OrderBy(article => article.Content.FrontMatter.Order).ThenBy(article => article.Slug, StringComparer.Ordinal))
     {
+        var frontMatter = article.Content.FrontMatter;
         <article>
-            <h2><a href="@Site.ResolveUrl(article.RelativePath).AbsolutePath">@article.Title</a></h2>
-            <p>@article.Description</p>
+            <h2><a href="@Site.ResolveUrl(ArticlePage.PathFor(article.Slug)).AbsolutePath">@frontMatter.Title</a></h2>
+            <p>@frontMatter.Description</p>
         </article>
     }
 </section>

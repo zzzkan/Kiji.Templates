@@ -1,12 +1,13 @@
+@using Kiji.Doc.Pages
 @inject SiteInfo Site
 @inject PageInfo Page
 @inject ContentCollection<Article> Articles
 
 <p class="nav-title">Documentation</p>
 <ul>
-    @foreach (var article in Articles.OrderBy(article => article.Order).ThenBy(article => article.Slug, StringComparer.Ordinal))
+    @foreach (var article in Articles.OrderBy(article => article.Content.FrontMatter.Order).ThenBy(article => article.Slug, StringComparer.Ordinal))
     {
-        var url = Site.ResolveUrl(article.RelativePath).AbsolutePath;
-        <li><a href="@url" aria-current="@(Page.Url.AbsolutePath == url ? "page" : null)">@article.Title</a></li>
+        var url = Site.ResolveUrl(ArticlePage.PathFor(article.Slug)).AbsolutePath;
+        <li><a href="@url" aria-current="@(Page.Url.AbsolutePath == url ? "page" : null)">@article.Content.FrontMatter.Title</a></li>
     }
 </ul>

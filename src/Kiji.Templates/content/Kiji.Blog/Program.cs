@@ -31,8 +31,9 @@ builder.UseNotFoundPage<NotFound>();
 builder.AddSitemap();
 
 builder.AddRssFeed(services => services.GetRequiredService<ContentCollection<BlogPost>>()
-    .OrderByDescending(post => post.Date)
+    .OrderByDescending(post => post.Content.FrontMatter.Date)
     .ThenBy(post => post.Slug, StringComparer.Ordinal)
-    .Select(post => new FeedItem(post.Title, post.Description, post.Date, post.RelativePath)));
+    .Select(post => new FeedItem(post.Content.FrontMatter.Title, post.Content.FrontMatter.Description,
+        post.Content.FrontMatter.Date, Post.PathFor(post.Slug))));
 
 return await builder.Build().RunAsync();

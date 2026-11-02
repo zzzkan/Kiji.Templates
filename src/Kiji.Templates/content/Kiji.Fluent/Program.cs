@@ -14,9 +14,7 @@ builder.SiteInfo = new SiteInfo
 };
 
 builder.Services.AddFluentUIComponents();
-
 builder.UseDefaultLayout<MainLayout>();
-
 builder.UseNotFoundPage<NotFound>();
 
 return await builder.Build().RunAsync();
