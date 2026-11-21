@@ -24,14 +24,14 @@ Edit `Program.cs` to set your site's name, description, language, author, and pu
 URL. The home page and metadata use these values automatically.
 
 ```csharp
-builder.SiteInfo = new SiteInfo
+builder.UseSiteInfo(new SiteInfo
 {
     Name = "Project handbook",
     Description = "Everything you need to get started.",
     BaseUrl = new Uri("https://example.com/handbook/"),
     Language = "en",
     Author = "Your team",
-};
+});
 ```
 
 ## Next steps
