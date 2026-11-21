@@ -36,7 +36,7 @@ Set your public `BaseUrl` in `Program.cs`, including any subpath such as
 `https://example.org/my-site/`, then run:
 
 ```sh
-dotnet publish -c Release
+dotnet publish -c Release -o dist
 ```
 
 Upload the contents of `dist/` to your static host. The site does not need a

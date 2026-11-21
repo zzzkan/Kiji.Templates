@@ -6,16 +6,17 @@ using Kiji.Feeds;
 using Kiji.Markdown;
 using Kiji.Sitemaps;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 
 var builder = StaticSite.CreateBuilder(args);
-builder.SiteInfo = new SiteInfo
+builder.UseSiteInfo(new SiteInfo
 {
     BaseUrl = new Uri("__KIJI_BASE_URL__"),
     Name = "__KIJI_SITE_NAME__",
     Description = "__KIJI_DESCRIPTION__",
     Language = "__KIJI_SITE_LANGUAGE__",
     Author = "__KIJI_SITE_AUTHOR__",
-};
+});
 
 builder.AddMarkdownContent<PostFrontMatter, BlogPost>(BlogPost.Create,
     options => options.Directory = "content/posts");
@@ -37,4 +38,4 @@ builder.AddRssFeed(services => services.GetRequiredService<ContentCollection<Blo
         post.Content.FrontMatter.Date, $"posts/{Uri.EscapeDataString(post.Slug)}/")));
 builder.AddSitemap();
 
-return await builder.Build().RunAsync();
+await builder.Build().RunAsync();

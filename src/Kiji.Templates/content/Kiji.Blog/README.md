@@ -25,7 +25,7 @@ change them later.
 Run `dotnet watch` to start a local preview at <http://localhost:8080>.
 The site rebuilds when you edit files. Press `Ctrl+C` to stop.
 
-To publish, run `dotnet publish -c Release` and upload the contents of `dist/`
+To publish, run `dotnet publish -c Release -o dist` and upload the contents of `dist/`
 to your static host. The site does not need a .NET server.
 
 To learn more about creating pages and customizing your site, see the

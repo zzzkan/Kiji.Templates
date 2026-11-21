@@ -43,6 +43,6 @@ the home page automatically. Use unique names made of lowercase ASCII letters,
 digits, and hyphens. Every article needs a `title`. Navigation sorts by `order`,
 then by slug.
 
-Run `dotnet publish -c Release`, then upload the contents of `dist/` to your
+Run `dotnet publish -c Release -o dist`, then upload the contents of `dist/` to your
 static host. Configure the host to serve `index.html` for directory URLs and
 `404.html` for missing pages. The site does not need a .NET server.

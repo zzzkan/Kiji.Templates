@@ -78,7 +78,7 @@ public class BlogTests(TemplateFixture fixture) : PublishedSiteTest(fixture)
         await Expect(picture).ToBeVisibleAsync();
         await Expect(picture).ToHaveAttributeAsync("srcset", new System.Text.RegularExpressions.Regex(@"\d+w"));
         Assert.True(await picture.EvaluateAsync<bool>("image => image.complete && image.naturalWidth > 0"));
-        Assert.StartsWith($"{baseUrl}posts/keeping-a-notebook/", await picture.EvaluateAsync<string>("image => image.currentSrc"));
+        Assert.StartsWith($"{baseUrl}_images/", await picture.EvaluateAsync<string>("image => image.currentSrc"));
         await Page.ScreenshotAsync(new() { Path = Path.Combine(diagnostics, "post-desktop.png"), FullPage = true });
 
         await Page.SetViewportSizeAsync(390, 844);

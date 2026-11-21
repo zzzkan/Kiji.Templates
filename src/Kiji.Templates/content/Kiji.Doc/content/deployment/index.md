@@ -15,7 +15,7 @@ Navigation links, canonical URLs, assets, and the sitemap use this address.
 Run this command from the project directory:
 
 ```sh
-dotnet publish -c Release
+dotnet publish -c Release -o dist
 ```
 
 Upload the contents of `dist/` to your static host. The site runs as ordinary
